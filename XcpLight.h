@@ -8,8 +8,9 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-// struct and type definitions (struct, enum und typedef)
+// struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
+
 /* command transfer object */
 typedef struct
 {

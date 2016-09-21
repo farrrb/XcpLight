@@ -5,7 +5,7 @@
 /******************************************************************************/
 
 //------------------------------------------------------------------------------
-// local macro constant
+// local macro constants
 //------------------------------------------------------------------------------
 
 /** VERSIONS **/
@@ -143,8 +143,9 @@
 #define XCP_PRT_RESERVE4            ((uint8_t)0x80)
 
 //------------------------------------------------------------------------------
-// local struct and type definitions (struct, enum und typedef)
+// local struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
+
 typedef struct
 {
   uint8_t sessionStatus;
@@ -200,16 +201,16 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
       _XcpLightData.ctoReplyMsg.payload[0] = XCP_PID_RES;
 
       _XcpLightData.ctoReplyMsg.payload[1] = 0u;
-      #ifdef XCPLIGHT_CFG_RES_CALPAG
+      #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
       _XcpLightData.ctoReplyMsg.payload[1] |= XCP_RES_CALPAG;
       #endif
-      #ifdef XCPLIGHT_CFG_RES_DAQ
+      #ifdef XCPLIGHT_CFG_ENABLE_DAQ
       _XcpLightData.ctoReplyMsg.payload[1] |= XCP_RES_DAQ;
       #endif
-      #ifdef XCPLIGHT_CFG_RES_STIM
+      #ifdef XCPLIGHT_CFG_ENABLE_STIM
       _XcpLightData.ctoReplyMsg.payload[1] |= XCP_RES_STIM;
       #endif
-      #ifdef XCPLIGHT_CFG_RES_PGM
+      #ifdef XCPLIGHT_CFG_ENABLE_PGM
       _XcpLightData.ctoReplyMsg.payload[1] |= XCP_RES_PGM;
       #endif
 

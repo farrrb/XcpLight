@@ -4,17 +4,18 @@
 //------------------------------------------------------------------------------
 // macro constants
 //------------------------------------------------------------------------------
+
 /** CONFIG **/
 #define XCPLIGHT_CFG_XTO_LENGTH 8
 
 /** OPTIONS **/
-//#define XCPLIGHT_CFG_RES_CALPAG
-//#define XCPLIGHT_CFG_RES_DAQ
-//#define XCPLIGHT_CFG_RES_STIM
-//#define XCPLIGHT_CFG_RES_PGM
+//#define XCPLIGHT_CFG_ENABLE_CALPAG
+//#define XCPLIGHT_CFG_ENABLE_DAQ
+//#define XCPLIGHT_CFG_ENABLE_STIM
+//#define XCPLIGHT_CFG_ENABLE_PGM
 
 //------------------------------------------------------------------------------
-// struct and type definitions (struct, enum und typedef)
+// struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
