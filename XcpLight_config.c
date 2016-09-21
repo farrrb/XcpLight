@@ -1,24 +1,16 @@
-#ifndef __XCPLIGHT_CONFIG_H
-#define __XCPLIGHT_CONFIG_H
 ////////////////////////////////////////////////////////////////////////////////
-/// \file    XcpLight_config.h
+/// \file    XcpLight_config.c
 /// date    09.2016
 /// author  F. Zahn
 /// version 00.00.01
 /// note    for license see LICENSE file
 ////////////////////////////////////////////////////////////////////////////////
+#include "XcpLight_config.h"
+#include "XcpLight.h"
 
 //------------------------------------------------------------------------------
 // macro constants
 //------------------------------------------------------------------------------
-/** CONFIG **/
-#define XCPLIGHT_CFG_XTO_LENGTH 8
-
-/** OPTIONS **/
-//#define XCPLIGHT_CFG_RES_CALPAG
-//#define XCPLIGHT_CFG_RES_DAQ
-//#define XCPLIGHT_CFG_RES_STIM
-//#define XCPLIGHT_CFG_RES_PGM
 
 //------------------------------------------------------------------------------
 // struct and type definitions (struct, enum und typedef)
@@ -35,7 +27,7 @@
 //------------------------------------------------------------------------------
 // external functions
 //------------------------------------------------------------------------------
+void XcpLight_SendMessage(XcpLightMessage_t * pMsg)
+{
 
-
-#endif // __XCPLIGHT_CONFIG_H
-
+}
