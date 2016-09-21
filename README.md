@@ -1,2 +1,17 @@
 # XcpLight
-Lightweight "Universal Measurement and Calibration Protocol" Implementation
+## Summary
+This projects at developing a lightweight implementation of the "Universal Measurement and Calibration Protocol". 
+
+## Features
+- Login works without seed & key
+
+## Todos
+- Provide basic self information about the driver configuration
+- Asynchronous data readout via (short) upload
+- Synchronous data readout via dynamic DAQ lists
+
+## Integration / API
+
+## Resources
+[XCP on Wikipedia](https://en.wikipedia.org/wiki/XCP_(protocol))
+[XCP Reference Book by Vector Informatik GmbH](http://vector.com/portal/medien/solutions_for/xcp/XCP_ReferenceBook_V1.0_EN.pdf)
