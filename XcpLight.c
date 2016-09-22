@@ -21,6 +21,7 @@
 #define XCP_PID_SRV                     ((uint8_t)0xFC) ///< service
 // note PID 0xFB ... 0x00 absolute or relative ODT number for DAQ
 
+
 /** EVENT CODES **/
 #define XCP_EVT_EV_RESUME_MODE          ((uint8_t)0x00)
 #define XCP_EVT_EV_CLEAR_DAQ            ((uint8_t)0x01)
@@ -40,6 +41,29 @@
 /** SERVICE REQUEST CODES **/
 #define XCP_SRC_SERV_RESET              ((uint8_t)0x00)
 #define XCP_SRC_SERV_TEXT               ((uint8_t)0x01)
+
+
+/** ERROR CODES **/
+#define XCP_ERR_CMD_SYNCH         ((uint8_t)0x00)
+#define XCP_ERR_CMD_BUSY          ((uint8_t)0x10)
+#define XCP_ERR_DAQ_ACTIVE        ((uint8_t)0x11)
+#define XCP_ERR_PGM_ACTIVE        ((uint8_t)0x12)
+#define XCP_ERR_CMD_UNKNOWN       ((uint8_t)0x20)
+#define XCP_ERR_CMD_SYNTAX        ((uint8_t)0x21)
+#define XCP_ERR_OUT_OF_RANGE      ((uint8_t)0x22)
+#define XCP_ERR_WRITE_PROTECTED   ((uint8_t)0x23)
+#define XCP_ERR_ACCESS_DENIED     ((uint8_t)0x24)
+#define XCP_ERR_ACCESS_LOCKED     ((uint8_t)0x25)
+#define XCP_ERR_PAGE_NOT_VALID    ((uint8_t)0x26)
+#define XCP_ERR_MODE_NOT_VALID    ((uint8_t)0x27)
+#define XCP_ERR_SEGMENT_NOT_VALID ((uint8_t)0x28)
+#define XCP_ERR_SEQUENCE          ((uint8_t)0x29)
+#define XCP_ERR_DAQ_CONFIG        ((uint8_t)0x2A)
+#define XCP_ERR_MEMORY_OVERFLOW   ((uint8_t)0x30)
+#define XCP_ERR_GENERIC           ((uint8_t)0x31)
+#define XCP_ERR_VERIFY            ((uint8_t)0x32)
+#define XCP_ERR_RES_TEMP_NOT_ACC  ((uint8_t)0x33)
+#define XCP_ERR_SUBCMD_UNKNOWN    ((uint8_t)0x34)
 
 
 /** COMMAND CODES **/
@@ -164,9 +188,18 @@ XcpLightInternals_t _XcpLightData = {0};
 // local macro functions
 //------------------------------------------------------------------------------
 
+#define Uint32FromUint8Ptr(ptr) (*((uint32_t *)(ptr)))
+
+//#define Uint32FromUint8Ptr(ptr) ( ((*((ptr)+3)&0xFFu) << 24u) | \
+//                                  ((*((ptr)+2)&0xFFu) << 16u) | \
+//                                  ((*((ptr)+1)&0xFFu) <<  8u) | \
+//                                  ((*((ptr)+0)&0xFFu) <<  0u))
+
 //------------------------------------------------------------------------------
 // local functions - prototypes
 //------------------------------------------------------------------------------
+
+void _XcpLight_BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
 
 //------------------------------------------------------------------------------
 // local functions
@@ -260,47 +293,79 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
     case XCP_CMD_GET_DAQ_PROCESSOR_INFO:
       _XcpLightData.ctoReplyMsg.length = 8u;
       _XcpLightData.ctoReplyMsg.payload[0] = XCP_PID_RES;
-      _XcpLightData.ctoReplyMsg.payload[1] = 0x00; // @todo: DAQ_PROPERTIES
+      _XcpLightData.ctoReplyMsg.payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
 
-      _XcpLightData.ctoReplyMsg.payload[2] = 0x00; // @todo: MAX_DAQ
-      _XcpLightData.ctoReplyMsg.payload[3] = 0x00; // @todo: MAX_DAQ
+      _XcpLightData.ctoReplyMsg.payload[2] = 0x00u; // @todo: MAX_DAQ
+      _XcpLightData.ctoReplyMsg.payload[3] = 0x00u; // @todo: MAX_DAQ
 
-      _XcpLightData.ctoReplyMsg.payload[4] = 0x00; // @todo: MAX_EVENT_CHANNEL
-      _XcpLightData.ctoReplyMsg.payload[5] = 0x00; // @todo: MAX_EVENT_CHANNEL
+      _XcpLightData.ctoReplyMsg.payload[4] = 0x00u; // @todo: MAX_EVENT_CHANNEL
+      _XcpLightData.ctoReplyMsg.payload[5] = 0x00u; // @todo: MAX_EVENT_CHANNEL
 
-      _XcpLightData.ctoReplyMsg.payload[6] = 0x00; // @todo: MIN_DAQ
-      _XcpLightData.ctoReplyMsg.payload[7] = 0x00; // @todo: DAQ_KEY_BYTE
+      _XcpLightData.ctoReplyMsg.payload[6] = 0x00u; // @todo: MIN_DAQ
+      _XcpLightData.ctoReplyMsg.payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
       sendFlag = 1;
       break;
 
     case XCP_CMD_GET_DAQ_RESOLUTION_INFO:
       _XcpLightData.ctoReplyMsg.length = 8u;
       _XcpLightData.ctoReplyMsg.payload[0] = XCP_PID_RES;
-      _XcpLightData.ctoReplyMsg.payload[1] = 0x00; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
-      _XcpLightData.ctoReplyMsg.payload[2] = 0x00; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
-      _XcpLightData.ctoReplyMsg.payload[3] = 0x00; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
-      _XcpLightData.ctoReplyMsg.payload[4] = 0x00; // @todo: MAX_ODT_ENTRY_SIZE_STIM
-      _XcpLightData.ctoReplyMsg.payload[5] = 0x00; // @todo: TIMESTAMP_MODE
+      _XcpLightData.ctoReplyMsg.payload[1] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
+      _XcpLightData.ctoReplyMsg.payload[2] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
+      _XcpLightData.ctoReplyMsg.payload[3] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
+      _XcpLightData.ctoReplyMsg.payload[4] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_STIM
+      _XcpLightData.ctoReplyMsg.payload[5] = 0x00u; // @todo: TIMESTAMP_MODE
 
-      _XcpLightData.ctoReplyMsg.payload[6] = 0x00; // @todo: TIMESTAMP_TICKS
-      _XcpLightData.ctoReplyMsg.payload[7] = 0x00; // @todo: TIMESTAMP_TICKS
+      _XcpLightData.ctoReplyMsg.payload[6] = 0x00u; // @todo: TIMESTAMP_TICKS
+      _XcpLightData.ctoReplyMsg.payload[7] = 0x00u; // @todo: TIMESTAMP_TICKS
       sendFlag = 1;
       break;
 
     case XCP_CMD_SHORT_UPLOAD:
-      _XcpLightData.ctoReplyMsg.length = pMsg->payload[1];
-      _XcpLightData.ctoReplyMsg.payload[0] = XCP_PID_RES;
-      _XcpLightData.ctoReplyMsg.payload[1] = 0x01;
-      _XcpLightData.ctoReplyMsg.payload[2] = 0x23;
-      _XcpLightData.ctoReplyMsg.payload[3] = 0x45;
-      _XcpLightData.ctoReplyMsg.payload[4] = 0x67;
-      _XcpLightData.ctoReplyMsg.payload[5] = 0x89;
-      _XcpLightData.ctoReplyMsg.payload[6] = 0xAB;
-      _XcpLightData.ctoReplyMsg.payload[7] = 0xCD;
-      sendFlag = 1;
+      {
+        uint32_t tmpAddress = 0;
+        uint8_t  tmpAddressExt = 0;
+        uint8_t  length = (pMsg->payload[1] & 0xFFu);
+
+        if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+        {
+          _XcpLightData.ctoReplyMsg.length = length + 1u;
+          _XcpLightData.ctoReplyMsg.payload[0] = XCP_PID_RES;
+          tmpAddressExt  = (pMsg->payload[3] & 0xFFu);
+          tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
+          _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
+          XcpLight_ReadFromAddress((uint8_t *)_XcpLightData.mta, length, &(_XcpLightData.ctoReplyMsg.payload[1]));
+          sendFlag = 1;
+        }
+        else
+        {
+          _XcpLight_BuildErrorMessage(&_XcpLightData.ctoReplyMsg, XCP_ERR_OUT_OF_RANGE);
+          sendFlag = 1;
+        }
+      }
+      break;
+
+    case XCP_CMD_SET_MTA:
+      {
+        uint32_t tmpAddress = 0;
+        uint8_t  tmpAddressExt = 0;
+
+        _XcpLightData.ctoReplyMsg.length = 2u;
+        _XcpLightData.ctoReplyMsg.payload[0] = XCP_PID_RES;
+        _XcpLightData.ctoReplyMsg.payload[1] = 0x00u;
+
+        tmpAddressExt = (pMsg->payload[3] & 0xFFu);
+        tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
+        _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
+
+
+        sendFlag = 1;
+      }
+
       break;
 
     default:
+      _XcpLight_BuildErrorMessage(&_XcpLightData.ctoReplyMsg, XCP_ERR_CMD_UNKNOWN);
+      sendFlag = 1;
       break;
   }
 
@@ -308,6 +373,13 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
   {
     XcpLight_SendMessage(&_XcpLightData.ctoReplyMsg);
   }
+}
+
+void _XcpLight_BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
+{
+  pMsg->length = 2u;
+  pMsg->payload[0] = XCP_PID_ERR;
+  pMsg->payload[1] = errorCode;
 }
 
 int XcpLight_Event(uint8_t eventNo)
