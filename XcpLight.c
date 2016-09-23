@@ -240,94 +240,113 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
   switch(pMsg->payload[0])
   {
     case XCP_CMD_CONNECT:
-      pReplyMsg->length = 8u;
-      pReplyMsg->payload[0] = XCP_PID_RES;
+      {
+        pReplyMsg->length = 8u;
+        pReplyMsg->payload[0] = XCP_PID_RES;
 
-      pReplyMsg->payload[1] = 0u;
-      #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
-      pReplyMsg->payload[1] |= XCP_RES_CALPAG;
-      #endif
-      #ifdef XCPLIGHT_CFG_ENABLE_DAQ
-      pReplyMsg->payload[1] |= XCP_RES_DAQ;
-      #endif
-      #ifdef XCPLIGHT_CFG_ENABLE_STIM
-      pReplyMsg->payload[1] |= XCP_RES_STIM;
-      #endif
-      #ifdef XCPLIGHT_CFG_ENABLE_PGM
-      pReplyMsg->payload[1] |= XCP_RES_PGM;
-      #endif
+        pReplyMsg->payload[1] = 0u;
+        #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
+        pReplyMsg->payload[1] |= XCP_RES_CALPAG;
+        #endif
+        #ifdef XCPLIGHT_CFG_ENABLE_DAQ
+        pReplyMsg->payload[1] |= XCP_RES_DAQ;
+        #endif
+        #ifdef XCPLIGHT_CFG_ENABLE_STIM
+        pReplyMsg->payload[1] |= XCP_RES_STIM;
+        #endif
+        #ifdef XCPLIGHT_CFG_ENABLE_PGM
+        pReplyMsg->payload[1] |= XCP_RES_PGM;
+        #endif
 
-      pReplyMsg->payload[2] = 0x80u; // @todo COMM_MODE_BASIC
-      pReplyMsg->payload[3] = XCPLIGHT_CFG_XTO_LENGTH;
-      pReplyMsg->payload[4] = XCPLIGHT_CFG_XTO_LENGTH;
-      pReplyMsg->payload[5] = 0x00u; // reserved
-      pReplyMsg->payload[6] = XCP_VER_PROTOCOL_LAYER;
-      pReplyMsg->payload[7] = XCP_VER_TRANSPORT_LAYER;
+        pReplyMsg->payload[2] = 0x80u; // @todo COMM_MODE_BASIC
+        pReplyMsg->payload[3] = XCPLIGHT_CFG_XTO_LENGTH;
+        pReplyMsg->payload[4] = XCPLIGHT_CFG_XTO_LENGTH;
+        pReplyMsg->payload[5] = 0x00u; // reserved
+        pReplyMsg->payload[6] = XCP_VER_PROTOCOL_LAYER;
+        pReplyMsg->payload[7] = XCP_VER_TRANSPORT_LAYER;
 
-      _XcpLightData.sessionStatus |= XCP_SES_ACTIVE;
+        _XcpLightData.sessionStatus |= XCP_SES_ACTIVE;
 
-      sendFlag = 1;
+        sendFlag = 1;
+      }
       break;
 
     case XCP_CMD_DISCONNECT:
-      pReplyMsg->length = 1u;
-      pReplyMsg->payload[0] = XCP_PID_RES;
-      sendFlag = 1;
+      {
+        pReplyMsg->length = 1u;
+        pReplyMsg->payload[0] = XCP_PID_RES;
+        sendFlag = 1;
+      }
+      break;
+
+    case XCP_CMD_SYNCH:
+      {
+        _XcpLight_BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
+        sendFlag = 1;
+      }
       break;
 
     case XCP_CMD_GET_COMM_MODE_INFO:
-      pReplyMsg->length = 8u;
-      pReplyMsg->payload[0] = XCP_PID_RES;
-      pReplyMsg->payload[1] = 0x00u; // reserved
-      pReplyMsg->payload[2] = 0x00u; // @todo: COMM_MODE_OPTIONAL
-      pReplyMsg->payload[3] = 0x00u; // reserved
-      pReplyMsg->payload[4] = 0x00u; // @todo: MAX_BS
-      pReplyMsg->payload[5] = 0x00u; // @todo: MAX_ST
-      pReplyMsg->payload[6] = 0x00u; // @todo: QUEUE_SIZE
-      pReplyMsg->payload[7] = XCP_VER_DRIVER;
-      sendFlag = 1;
+      {
+        pReplyMsg->length = 8u;
+        pReplyMsg->payload[0] = XCP_PID_RES;
+        pReplyMsg->payload[1] = 0x00u; // reserved
+        pReplyMsg->payload[2] = 0x00u; // @todo: COMM_MODE_OPTIONAL
+        pReplyMsg->payload[3] = 0x00u; // reserved
+        pReplyMsg->payload[4] = 0x00u; // @todo: MAX_BS
+        pReplyMsg->payload[5] = 0x00u; // @todo: MAX_ST
+        pReplyMsg->payload[6] = 0x00u; // @todo: QUEUE_SIZE
+        pReplyMsg->payload[7] = XCP_VER_DRIVER;
+        sendFlag = 1;
+      }
       break;
 
     case XCP_CMD_GET_STATUS:
-      pReplyMsg->length = 6u;
-      pReplyMsg->payload[0] = XCP_PID_RES;
-      pReplyMsg->payload[1] = _XcpLightData.sessionStatus;
-      pReplyMsg->payload[2] = _XcpLightData.protectionStatus;
-      pReplyMsg->payload[3] = 0x00u; // @todo: STATE_NUMBER
+      {
+        pReplyMsg->length = 6u;
+        pReplyMsg->payload[0] = XCP_PID_RES;
+        pReplyMsg->payload[1] = _XcpLightData.sessionStatus;
+        pReplyMsg->payload[2] = _XcpLightData.protectionStatus;
+        pReplyMsg->payload[3] = 0x00u; // @todo: STATE_NUMBER
 
-      pReplyMsg->payload[4] = 0x00u; // @todo: Session configuration id
-      pReplyMsg->payload[5] = 0x00u; // @todo: Session configuration id
-      sendFlag = 1;
+        pReplyMsg->payload[4] = 0x00u; // @todo: Session configuration id
+        pReplyMsg->payload[5] = 0x00u; // @todo: Session configuration id
+        sendFlag = 1;
+      }
       break;
 
     case XCP_CMD_GET_DAQ_PROCESSOR_INFO:
-      pReplyMsg->length = 8u;
-      pReplyMsg->payload[0] = XCP_PID_RES;
-      pReplyMsg->payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
+      {
+        pReplyMsg->length = 8u;
+        pReplyMsg->payload[0] = XCP_PID_RES;
+        pReplyMsg->payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
 
-      pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
-      pReplyMsg->payload[3] = 0x00u; // @todo: MAX_DAQ
+        pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
+        pReplyMsg->payload[3] = 0x00u; // @todo: MAX_DAQ
 
-      pReplyMsg->payload[4] = 0x00u; // @todo: MAX_EVENT_CHANNEL
-      pReplyMsg->payload[5] = 0x00u; // @todo: MAX_EVENT_CHANNEL
+        pReplyMsg->payload[4] = 0x00u; // @todo: MAX_EVENT_CHANNEL
+        pReplyMsg->payload[5] = 0x00u; // @todo: MAX_EVENT_CHANNEL
 
-      pReplyMsg->payload[6] = 0x00u; // @todo: MIN_DAQ
-      pReplyMsg->payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
-      sendFlag = 1;
+        pReplyMsg->payload[6] = 0x00u; // @todo: MIN_DAQ
+        pReplyMsg->payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
+        sendFlag = 1;
+      }
       break;
 
     case XCP_CMD_GET_DAQ_RESOLUTION_INFO:
-      pReplyMsg->length = 8u;
-      pReplyMsg->payload[0] = XCP_PID_RES;
-      pReplyMsg->payload[1] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
-      pReplyMsg->payload[2] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
-      pReplyMsg->payload[3] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
-      pReplyMsg->payload[4] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_STIM
-      pReplyMsg->payload[5] = 0x00u; // @todo: TIMESTAMP_MODE
+      {
+        pReplyMsg->length = 8u;
+        pReplyMsg->payload[0] = XCP_PID_RES;
+        pReplyMsg->payload[1] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
+        pReplyMsg->payload[2] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
+        pReplyMsg->payload[3] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
+        pReplyMsg->payload[4] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_STIM
+        pReplyMsg->payload[5] = 0x00u; // @todo: TIMESTAMP_MODE
 
-      pReplyMsg->payload[6] = 0x00u; // @todo: TIMESTAMP_TICKS
-      pReplyMsg->payload[7] = 0x00u; // @todo: TIMESTAMP_TICKS
-      sendFlag = 1;
+        pReplyMsg->payload[6] = 0x00u; // @todo: TIMESTAMP_TICKS
+        pReplyMsg->payload[7] = 0x00u; // @todo: TIMESTAMP_TICKS
+        sendFlag = 1;
+      }
       break;
 
     case XCP_CMD_SHORT_UPLOAD:
@@ -371,6 +390,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
       }
 
       break;
+
     case XCP_CMD_DOWNLOAD:
       {
         uint8_t noElements; // address granularity!
@@ -379,8 +399,10 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
       break;
 
     default:
-      _XcpLight_BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
-      sendFlag = 1;
+      {
+        _XcpLight_BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+        sendFlag = 1;
+      }
       break;
   }
 
