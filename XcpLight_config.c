@@ -35,7 +35,18 @@ extern void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * p
 {
   while(length)
   {
-    *pMem = *((uint8_t *)addr) & 0xFFu;
+    *pMem = (*addr);
+    pMem++;
+    addr++;
+    length--;
+  }
+}
+
+extern void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * pMem)
+{
+  while(length)
+  {
+    *addr = (*pMem);
     pMem++;
     addr++;
     length--;
