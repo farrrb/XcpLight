@@ -340,7 +340,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
             pReplyMsg->payload[0] = XCP_PID_RES;
             pReplyMsg->payload[1] = _XcpLightData.sessionStatus;
             pReplyMsg->payload[2] = _XcpLightData.protectionStatus;
-            pReplyMsg->payload[3] = 0x00u; // @todo: STATE_NUMBER
+            pReplyMsg->payload[3] = 0x00u; /* STATE_NUMBER: ECU_STATES not supported */
 
             pReplyMsg->payload[4] = 0x00u; // @todo: Session configuration id
             pReplyMsg->payload[5] = 0x00u; // @todo: Session configuration id
