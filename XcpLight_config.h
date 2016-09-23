@@ -14,6 +14,8 @@
 //#define XCPLIGHT_CFG_ENABLE_STIM
 //#define XCPLIGHT_CFG_ENABLE_PGM
 
+//#define XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
+
 //------------------------------------------------------------------------------
 // struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
