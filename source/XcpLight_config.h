@@ -5,6 +5,9 @@
 // macro constants
 //------------------------------------------------------------------------------
 
+/** INCLUDES **/
+#include <stdint.h>
+
 /** CONFIG **/
 #define XCPLIGHT_CFG_XTO_LENGTH 8
 

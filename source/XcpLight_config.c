@@ -23,7 +23,7 @@
 
 void XcpLight_SendMessage(XcpLightMessage_t * pMsg)
 {
- XcpLightTransportLayerSend(pMsg);
+  //XcpLightTransportLayerSend(pMsg);
 }
 
 uint32_t XcpLight_GetPointer(uint32_t address, uint8_t address_extension)
