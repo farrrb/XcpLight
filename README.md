@@ -15,8 +15,8 @@ This projects at developing a lightweight implementation of the "Universal Measu
 
 ## Todos
 - Provide basic self information about the driver configuration
-- Asynchronous data readout via (short) upload
 - Synchronous data readout via dynamic DAQ lists
+- Choose a unit test framework & implement tests
 
 ## Integration / API
 
