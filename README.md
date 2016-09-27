@@ -1,4 +1,6 @@
 # XcpLight
+[![Build Status](https://travis-ci.org/farrrb/XcpLight.svg?branch=master)](https://travis-ci.org/farrrb/XcpLight)
+
 ## Summary
 This projects at developing a lightweight implementation of the "Universal Measurement and Calibration Protocol". 
 
