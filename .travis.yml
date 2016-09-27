@@ -1,0 +1,12 @@
+# Enable C support
+language: c
+
+# Compiler selection
+compiler:
+  - gcc
+
+# Build steps
+script:
+  - mkdir build
+  - cd build
+  - cmake .. && make
