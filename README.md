@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/farrrb/XcpLight.svg?branch=master)](https://travis-ci.org/farrrb/XcpLight)
 
 ## Summary
-This projects at developing a lightweight implementation of the "Universal Measurement and Calibration Protocol". 
+This projects at developing a lightweight implementation of the "Universal Measurement and Calibration Protocol" - protocol layer. Do not use this in a production code environment! It's not done at all, yet.
 
 ## Features
 - Login works without seed & key
