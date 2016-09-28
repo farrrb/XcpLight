@@ -1,3 +1,8 @@
+# update notifications
+notifications:
+  email:
+    on_success: never
+
 # Enable C support
 language: c
 
@@ -11,4 +16,4 @@ script:
   - cd build
   - cmake ..
   - cmake --build .
-  - ctest -VV
+  - ctest -
