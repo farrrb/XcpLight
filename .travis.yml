@@ -9,4 +9,6 @@ compiler:
 script:
   - mkdir build
   - cd build
-  - cmake .. && make
+  - cmake ..
+  - cmake --build .
+  - ctest -VV

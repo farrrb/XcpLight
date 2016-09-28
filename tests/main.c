@@ -5,5 +5,5 @@
 int main(int argc, char **argv)
 {
   printf("tests passed\n");
-  return 42;
+  return 0;
 }
