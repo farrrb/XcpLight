@@ -13,6 +13,10 @@ enable_testing()
 # add include include directories
 include_directories(source)
 
+# add subdirectories
+add_subdirectory(externals)
+
+
 # add source files to the build
 set(SOURCES ${SOURCES}  source/XcpLight.c)
 set(SOURCES ${SOURCES}  source/XcpLight_config.c)
@@ -21,5 +25,8 @@ set(SOURCES ${SOURCES}  tests/main.c)
 
 # add exe
 add_executable(${PROJECT_NAME_TESTS} ${SOURCES})
+# link everything together
+target_link_libraries(${PROJECT_NAME_TESTS} Unity)
+
 # add test output file
 add_test(TestName ${PROJECT_NAME_TESTS})
