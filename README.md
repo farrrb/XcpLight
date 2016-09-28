@@ -1,4 +1,6 @@
 # XcpLight
+Copyright (c) 2016 0xFAB - Fabian Zahn   
+
 [![Build Status](https://travis-ci.org/farrrb/XcpLight.svg?branch=master)](https://travis-ci.org/farrrb/XcpLight)
 
 ## Summary

@@ -1,32 +1,32 @@
-# set minimum version
+# Copyright (c) 2016 0xFAB - Fabian Zahn
 cmake_minimum_required(VERSION 2.8.7)
 
 #set project name
 project(XcpLight)
-set(PROJECT_NAME_TESTS ${PROJECT_NAME}_tests)
 
-# use "C"
+# config
 enable_language(C)
-# use CTest
 enable_testing()
 
 # add include include directories
 include_directories(source)
+include_directories(externals/Unity/src)
 
-# add subdirectories
+# add XcpLight
+include_directories(XcpLight PUBLIC)
+add_library(XcpLight STATIC source/XcpLight.c source/XcpLight_config.c)
+
+# add Unity
 add_subdirectory(externals)
 
+# tests
+macro (Add_XcpLight_Test NAME TIMEOUT)
+    add_executable(${NAME} tests/${NAME}.c)
+    target_link_libraries(${NAME} XcpLight Unity)
+    add_test(${NAME} ${NAME})
+    set_tests_properties(${NAME} PROPERTIES TIMEOUT ${TIMEOUT})
+endmacro (Add_XcpLight_Test)
 
-# add source files to the build
-set(SOURCES ${SOURCES}  source/XcpLight.c)
-set(SOURCES ${SOURCES}  source/XcpLight_config.c)
-
-set(SOURCES ${SOURCES}  tests/main.c)
-
-# add exe
-add_executable(${PROJECT_NAME_TESTS} ${SOURCES})
-# link everything together
-target_link_libraries(${PROJECT_NAME_TESTS} Unity)
-
-# add test output file
-add_test(TestName ${PROJECT_NAME_TESTS})
+# add tests
+Add_XcpLight_Test(BasicCommands   5)
+Add_XcpLight_Test(LoginProcedure  5)
