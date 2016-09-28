@@ -6,7 +6,7 @@
 
 void test_BasicCommandDummy(void)
 {
-  TEST_ASSERT_TRUE(0);
+  TEST_ASSERT_TRUE(1);
 }
 
 int main(void)
