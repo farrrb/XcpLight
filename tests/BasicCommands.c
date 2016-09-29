@@ -42,7 +42,7 @@ void test_CmdConnect(void)
   XcpLight_Init();
   XcpLight_CommandProcessor(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(0x8u,  replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(8u,    replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:CONNECT */
 }
 
@@ -58,7 +58,7 @@ void test_CmdDisconnect(void)
 
   XcpLight_CommandProcessor(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(0x1u,  replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:DISCONNECT */
 }
 
