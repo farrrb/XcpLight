@@ -1,6 +1,11 @@
 #ifndef __XCPLIGHT_H
 #define __XCPLIGHT_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "XcpLight_config.h"
 
 //------------------------------------------------------------------------------
@@ -41,5 +46,8 @@ extern uint32_t XcpLight_GetPointer(uint32_t address, uint8_t address_extension)
 extern void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * pMem);
 extern void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * pMem);
 
-#endif // __XCPLIGHT_H
+#ifdef __cplusplus
+}
+#endif
 
+#endif // __XCPLIGHT_H
