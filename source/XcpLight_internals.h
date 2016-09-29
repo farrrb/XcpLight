@@ -10,11 +10,13 @@ extern "C"
 // macro constants
 //------------------------------------------------------------------------------
 
+// @todo move all the command codes here
+
 //------------------------------------------------------------------------------
 // struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
 
-/* internal data structure @todo move this to an "internals" file */
+/* internal data structure */
 typedef struct
 {
   uint32_t timestampCounter;
