@@ -53,7 +53,9 @@ void test_CmdDisconnect(void)
   cmdMsg.length     = 1u;
   cmdMsg.payload[0] = 0xFEu; /* DISCONNECT */
 
-  //XcpLight_Init();
+  /* let's see if we are connected... because we can only disconnect if the session is active */
+  TEST_ASSERT_BITS(XCP_SES_CONNECTED, XCP_SES_CONNECTED, _XcpLightData.sessionStatus);
+
   XcpLight_CommandProcessor(&cmdMsg);
 
   TEST_ASSERT_EQUAL_UINT8(0x1u,  replyMsg.length);
