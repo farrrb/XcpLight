@@ -12,6 +12,7 @@
 //------------------------------------------------------------------------------
 // external data
 //------------------------------------------------------------------------------
+XcpLightMessage_t replyMsg = {0};
 
 //------------------------------------------------------------------------------
 // macro functions
@@ -24,6 +25,7 @@
 void XcpLight_SendMessage(XcpLightMessage_t * pMsg)
 {
   //XcpLightTransportLayerSend(pMsg);
+  replyMsg = *pMsg; /* struct copy */
 }
 
 uint32_t XcpLight_GetPointer(uint32_t address, uint8_t address_extension)

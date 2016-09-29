@@ -1,4 +1,5 @@
 #include "XcpLight.h"
+#include "XcpLight_internals.h"
 
 /*
 -------------------------------------------------------------------------------
@@ -188,20 +189,11 @@
 // local struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
 
-typedef struct
-{
-  uint32_t timestampCounter;
-  uint8_t sessionStatus;
-  uint8_t protectionStatus;
-  uint8_t currentCommand;
-  XcpLightMessage_t ctoReplyMsg;
-  uint32_t mta;
-} XcpLightInternals_t;
-
 //------------------------------------------------------------------------------
 // local data
 //------------------------------------------------------------------------------
 
+/* internal data structure for state etc. */
 XcpLightInternals_t _XcpLightData = {0};
 
 //------------------------------------------------------------------------------

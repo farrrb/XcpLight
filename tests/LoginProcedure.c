@@ -2,7 +2,9 @@
 #include <stdint.h>
 
 #include "unity.h"
+
 #include "XcpLight.h"
+#include "XcpLight_internals.h"
 
 void test_LoginProcedureDummy(void)
 {
