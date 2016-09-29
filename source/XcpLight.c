@@ -190,6 +190,7 @@
 
 typedef struct
 {
+  uint32_t timestampCounter;
   uint8_t sessionStatus;
   uint8_t protectionStatus;
   uint8_t currentCommand;
@@ -237,12 +238,19 @@ void _XcpLight_BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
 //------------------------------------------------------------------------------
 void XcpLight_Init(void)
 {
+  _XcpLightData.timestampCounter = 0u;
   _XcpLightData.sessionStatus    = XCP_SES_RESET_SESSION;
+
   #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
   _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
   #else
   _XcpLightData.protectionStatus = 0u;
   #endif
+}
+
+void XcpLight_UpdateTimestampCounter(void)
+{
+  _XcpLightData.timestampCounter++;
 }
 
 void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
