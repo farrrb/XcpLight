@@ -11,6 +11,8 @@ extern XcpLightInternals_t _XcpLightData;
 
 XcpLightMessage_t cmdMsg = {0};
 
+/* santa's little helper functions */
+
 void clearCmdMessage(void)
 {
   int i;
@@ -31,10 +33,22 @@ void clearReplyMessage(void)
   replyMsg.length = 0u;
 }
 
-void test_CmdConnect(void)
+/* test setUp / tearDown */
+
+void setUp(void)
 {
   clearCmdMessage();
   clearReplyMessage();
+}
+
+void tearDown(void)
+{
+}
+
+/* the actual tests */
+
+void test_CmdConnect(void)
+{
   cmdMsg.length     = 2u;
   cmdMsg.payload[0] = 0xFFu; /* CONNECT */
   cmdMsg.payload[1] = 0x00u; /* mode=0 */
@@ -48,8 +62,6 @@ void test_CmdConnect(void)
 
 void test_CmdDisconnect(void)
 {
-  clearCmdMessage();
-  clearReplyMessage();
   cmdMsg.length     = 1u;
   cmdMsg.payload[0] = 0xFEu; /* DISCONNECT */
 
