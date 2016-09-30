@@ -13,9 +13,10 @@ extern XcpLightInternals_t _XcpLightData;
 
 XcpLightMessage_t cmdMsg = {{0}};
 
-
+/* test variables for mem read & write */
 uint32_t shortUploadVariable  = 0xDEADBEEFu;
 uint32_t downloadVariable     = 0xDEADBEEFu;
+
 /* santa's little helper functions */
 
 void clearCmdMessage(void)
