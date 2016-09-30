@@ -67,6 +67,7 @@ XcpLightInternals_t _XcpLightData = {0};
 XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 
 //------------------------------------------------------------------------------
 // local functions
@@ -132,6 +133,12 @@ XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessag
   return MSG_SEND;
 }
 
+XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+{
+  _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
+  return MSG_SEND;
+}
+
 /******************************************************************************/
 /*** external area ***/
 /******************************************************************************/
@@ -188,10 +195,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_SYNCH:
-          {
-            _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
-            sendFlag = 1;
-          }
+          sendFlag = _CmdSynch(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_GET_COMM_MODE_INFO:
