@@ -6,10 +6,12 @@
 #include "XcpLight.h"
 #include "XcpLight_internals.h"
 
+#include "TestHelper.h"
+
 extern XcpLightMessage_t replyMsg;
 extern XcpLightInternals_t _XcpLightData;
 
-XcpLightMessage_t cmdMsg = {0};
+XcpLightMessage_t cmdMsg = {{0}};
 
 /* santa's little helper functions */
 
@@ -39,6 +41,7 @@ void setUp(void)
 {
   clearCmdMessage();
   clearReplyMessage();
+  XcpLight_Init();
 }
 
 void tearDown(void)
