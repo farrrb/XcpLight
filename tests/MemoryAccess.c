@@ -99,7 +99,7 @@ void test_Download(void)
 
   XcpLight_CommandProcessor(&cmdMsg);
 
-  TEST_ASSERT(addr == _XcpLightData.mta);
+  TEST_ASSERT(addr == (uint32_t)_XcpLightData.mta);
 
   clearCmdMessage();
   clearReplyMessage();
