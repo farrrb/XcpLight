@@ -64,7 +64,7 @@ XcpLightInternals_t _XcpLightData = {0};
 //------------------------------------------------------------------------------
 // local functions - prototypes
 //------------------------------------------------------------------------------
-XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
+XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
 
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
@@ -77,11 +77,13 @@ XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * p
 //------------------------------------------------------------------------------
 // local functions
 //------------------------------------------------------------------------------
-XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
+XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
 {
   pMsg->length = 2u;
   pMsg->payload[0] = XCP_PID_ERR;
   pMsg->payload[1] = errorCode;
+
+  return MSG_SEND;
 }
 
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
@@ -140,9 +142,7 @@ XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessag
 
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
 {
-  _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
-
-  return MSG_SEND;
+  return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
 }
 
 XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
@@ -266,6 +266,24 @@ XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * p
   return MSG_SEND;
 }
 
+XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  uint8_t length = (pMsg->payload[1] & 0xFFu);
+  if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+  {
+    XcpLight_WriteToAddress((uint8_t *)_XcpLightData.mta, length, &(pMsg->payload[2]));
+
+    pReplyMsg->length = 1u;
+    pReplyMsg->payload[0] = XCP_PID_RES;
+  }
+  else
+  {
+    _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
+  return MSG_SEND;
+}
+
 /******************************************************************************/
 /*** external area ***/
 /******************************************************************************/
@@ -350,23 +368,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_DOWNLOAD:
-          {
-            uint8_t length = (pMsg->payload[1] & 0xFFu);
-            if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
-            {
-              XcpLight_WriteToAddress((uint8_t *)_XcpLightData.mta, length, &(pMsg->payload[2]));
-
-              pReplyMsg->length = 1u;
-              pReplyMsg->payload[0] = XCP_PID_RES;
-
-              sendFlag = 1;
-            }
-            else
-            {
-              _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
-              sendFlag = 1;
-            }
-          }
+          sendFlag = _CmdDownload(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_GET_DAQ_CLOCK:
@@ -374,10 +376,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         default:
-          {
-            _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
-            sendFlag = 1;
-          }
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
           break;
       }
     }
