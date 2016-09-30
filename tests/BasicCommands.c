@@ -83,8 +83,8 @@ void test_CmdSynch(void)
   XcpLight_CommandProcessor(&cmdMsg);
 
   TEST_ASSERT_EQUAL_UINT8(   2u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFE,  replyMsg.payload[0]); /* XCP_PID_ERR */
-  TEST_ASSERT_EQUAL_UINT8(0x00u, replyMsg.payload[1]); /* ERR_CMD_SYNCH */
+  TEST_ASSERT_EQUAL_UINT8(0xFEu,  replyMsg.payload[0]); /* XCP_PID_ERR */
+  TEST_ASSERT_EQUAL_UINT8(0x00u, replyMsg.payload[1]);  /* ERR_CMD_SYNCH */
 }
 
 void test_CmdGetCommModeInfo(void)
@@ -95,8 +95,8 @@ void test_CmdGetCommModeInfo(void)
 
   XcpLight_CommandProcessor(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(   8u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFF,  replyMsg.payload[0]); /* Ok:GET_COMM_MODE_INFO */
+  TEST_ASSERT_EQUAL_UINT8(  8u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFF, replyMsg.payload[0]); /* Ok:GET_COMM_MODE_INFO */
 
   TEST_ASSERT(replyMsg.payload[7]); /* driver version is not zero */
 }
@@ -109,8 +109,8 @@ void test_CmdGetStatus(void)
 
   XcpLight_CommandProcessor(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(   6u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFF,  replyMsg.payload[0]); /* Ok:GET_STATUS */
+  TEST_ASSERT_EQUAL_UINT8(  6u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFF, replyMsg.payload[0]); /* Ok:GET_STATUS */
   TEST_ASSERT_BITS(XCP_SES_CONNECTED, 0xFFu, replyMsg.payload[1]); /* sessions is at least connected */
 }
 
@@ -122,9 +122,22 @@ void test_CmdGetDaqProcessorInfo(void)
 
   XcpLight_CommandProcessor(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(   8u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFF,  replyMsg.payload[0]); /* Ok:GET_DAQ_PROCESSOR_INFO */
+  TEST_ASSERT_EQUAL_UINT8(  8u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFF, replyMsg.payload[0]); /* Ok:GET_DAQ_PROCESSOR_INFO */
 }
+
+void test_CmdGetDaqResolutionInfo(void)
+{
+  SET_SESSION_CONNECTED();
+  cmdMsg.length = 1u;
+  cmdMsg.payload[0] = XCP_CMD_GET_DAQ_RESOLUTION_INFO;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(  8u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFF, replyMsg.payload[0]); /* Ok:GET_DAQ_DAQ_RESOLUTION_INFO */
+}
+
 
 int main(void)
 {
@@ -136,6 +149,7 @@ int main(void)
   RUN_TEST(test_CmdGetCommModeInfo);
   RUN_TEST(test_CmdGetStatus);
   RUN_TEST(test_CmdGetDaqProcessorInfo);
+  RUN_TEST(test_CmdGetDaqResolutionInfo);
 
   return UNITY_END();
 }

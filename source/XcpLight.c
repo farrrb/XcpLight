@@ -186,6 +186,23 @@ XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLight
 
   pReplyMsg->payload[6] = 0x00u; // @todo: MIN_DAQ
   pReplyMsg->payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
+  pReplyMsg->payload[2] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
+  pReplyMsg->payload[3] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
+  pReplyMsg->payload[4] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_STIM
+  pReplyMsg->payload[5] = 0x00u; // @todo: TIMESTAMP_MODE
+
+  pReplyMsg->payload[6] = 0x00u; // @todo: TIMESTAMP_TICKS
+  pReplyMsg->payload[7] = 0x00u; // @todo: TIMESTAMP_TICKS
+
   return MSG_SEND;
 }
 
@@ -261,19 +278,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_GET_DAQ_RESOLUTION_INFO:
-          {
-            pReplyMsg->length = 8u;
-            pReplyMsg->payload[0] = XCP_PID_RES;
-            pReplyMsg->payload[1] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
-            pReplyMsg->payload[2] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
-            pReplyMsg->payload[3] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
-            pReplyMsg->payload[4] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_STIM
-            pReplyMsg->payload[5] = 0x00u; // @todo: TIMESTAMP_MODE
-
-            pReplyMsg->payload[6] = 0x00u; // @todo: TIMESTAMP_TICKS
-            pReplyMsg->payload[7] = 0x00u; // @todo: TIMESTAMP_TICKS
-            sendFlag = 1;
-          }
+          sendFlag = _CmdGetDaqResolutionInfo(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_SHORT_UPLOAD:
