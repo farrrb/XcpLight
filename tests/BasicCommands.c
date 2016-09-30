@@ -11,7 +11,7 @@
 extern XcpLightMessage_t replyMsg;
 extern XcpLightInternals_t _XcpLightData;
 
-XcpLightMessage_t cmdMsg = {0};
+XcpLightMessage_t cmdMsg = {{0}};
 
 /* santa's little helper functions */
 
@@ -111,7 +111,19 @@ void test_CmdGetStatus(void)
 
   TEST_ASSERT_EQUAL_UINT8(   6u, replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(0xFF,  replyMsg.payload[0]); /* Ok:GET_STATUS */
-  TEST_ASSERT_BITS(XCP_SES_CONNECTED, 0xFFu, replyMsg.payload[1]); /* Ok:GET_COMM_MODE_INFO */
+  TEST_ASSERT_BITS(XCP_SES_CONNECTED, 0xFFu, replyMsg.payload[1]); /* sessions is at least connected */
+}
+
+void test_CmdGetDaqProcessorInfo(void)
+{
+  SET_SESSION_CONNECTED();
+  cmdMsg.length = 1u;
+  cmdMsg.payload[0] = XCP_CMD_GET_DAQ_PROCESSOR_INFO;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(   8u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFF,  replyMsg.payload[0]); /* Ok:GET_DAQ_PROCESSOR_INFO */
 }
 
 int main(void)
@@ -123,6 +135,7 @@ int main(void)
   RUN_TEST(test_CmdSynch);
   RUN_TEST(test_CmdGetCommModeInfo);
   RUN_TEST(test_CmdGetStatus);
+  RUN_TEST(test_CmdGetDaqProcessorInfo);
 
   return UNITY_END();
 }

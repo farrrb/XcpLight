@@ -9,7 +9,7 @@
 extern XcpLightMessage_t replyMsg;
 extern XcpLightInternals_t _XcpLightData;
 
-XcpLightMessage_t cmdMsg = {0};
+XcpLightMessage_t cmdMsg = {{0}};
 
 /* santa's little helper functions */
 
