@@ -70,6 +70,7 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 
 //------------------------------------------------------------------------------
 // local functions
@@ -170,6 +171,24 @@ XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t 
 
   return MSG_SEND;
 }
+
+XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
+
+  pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
+  pReplyMsg->payload[3] = 0x00u; // @todo: MAX_DAQ
+
+  pReplyMsg->payload[4] = 0x00u; // @todo: MAX_EVENT_CHANNEL
+  pReplyMsg->payload[5] = 0x00u; // @todo: MAX_EVENT_CHANNEL
+
+  pReplyMsg->payload[6] = 0x00u; // @todo: MIN_DAQ
+  pReplyMsg->payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
+  return MSG_SEND;
+}
+
 /******************************************************************************/
 /*** external area ***/
 /******************************************************************************/
@@ -238,21 +257,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_GET_DAQ_PROCESSOR_INFO:
-          {
-            pReplyMsg->length = 8u;
-            pReplyMsg->payload[0] = XCP_PID_RES;
-            pReplyMsg->payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
-
-            pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
-            pReplyMsg->payload[3] = 0x00u; // @todo: MAX_DAQ
-
-            pReplyMsg->payload[4] = 0x00u; // @todo: MAX_EVENT_CHANNEL
-            pReplyMsg->payload[5] = 0x00u; // @todo: MAX_EVENT_CHANNEL
-
-            pReplyMsg->payload[6] = 0x00u; // @todo: MIN_DAQ
-            pReplyMsg->payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
-            sendFlag = 1;
-          }
+          sendFlag = _CmdGetDaqProcessorInfo(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_GET_DAQ_RESOLUTION_INFO:
