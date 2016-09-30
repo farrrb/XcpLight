@@ -66,6 +66,7 @@ XcpLightInternals_t _XcpLightData = {0};
 //------------------------------------------------------------------------------
 XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 
 //------------------------------------------------------------------------------
 // local functions
@@ -111,6 +112,22 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t
 
   /* set session to connected state */
   _XcpLightData.sessionStatus |= XCP_SES_CONNECTED; // mark session as active (connected)
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+{
+  /* protect all resources */
+  #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
+  _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
+  #endif
+
+  /* reset all session status bits */
+  _XcpLightData.sessionStatus    = XCP_SES_RESET_SESSION;
+
+  pReplyMsg->length = 1u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
 
   return MSG_SEND;
 }
@@ -167,19 +184,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
       switch(_XcpLightData.currentCommand)
       {
         case XCP_CMD_DISCONNECT:
-          {
-            /* protect all resources */
-            #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
-            _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
-            #endif
-
-            /* reset all session status bits */
-            _XcpLightData.sessionStatus    = XCP_SES_RESET_SESSION;
-
-            pReplyMsg->length = 1u;
-            pReplyMsg->payload[0] = XCP_PID_RES;
-            sendFlag = 1;
-          }
+          sendFlag = _CmdDisconnect(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_SYNCH:
