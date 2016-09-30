@@ -6,6 +6,8 @@
 #include "XcpLight.h"
 #include "XcpLight_internals.h"
 
+#include "TestHelper.h"
+
 extern XcpLightMessage_t replyMsg;
 extern XcpLightInternals_t _XcpLightData;
 
@@ -62,11 +64,9 @@ void test_CmdConnect(void)
 
 void test_CmdDisconnect(void)
 {
+  SET_SESSION_CONNECTED();
   cmdMsg.length     = 1u;
   cmdMsg.payload[0] = XCP_CMD_DISCONNECT; /* DISCONNECT */
-
-  /* let's see if we are connected... because we can only disconnect if the session is active */
-  TEST_ASSERT_BITS(XCP_SES_CONNECTED, XCP_SES_CONNECTED, _XcpLightData.sessionStatus);
 
   XcpLight_CommandProcessor(&cmdMsg);
 
@@ -74,10 +74,24 @@ void test_CmdDisconnect(void)
   TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:DISCONNECT */
 }
 
+void test_CmdSynch(void)
+{
+  SET_SESSION_CONNECTED();
+  cmdMsg.length = 1u;
+  cmdMsg.payload[0] = XCP_CMD_SYNCH;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(   2u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFE,  replyMsg.payload[0]); /* XCP_PID_ERR */
+  TEST_ASSERT_EQUAL_UINT8(0x00u, replyMsg.payload[1]); /* ERR_CMD_SYNCH */
+}
+
 int main(void)
 {
   UNITY_BEGIN();
   RUN_TEST(test_CmdConnect);
   RUN_TEST(test_CmdDisconnect);
+  RUN_TEST(test_CmdSynch);
   return UNITY_END();
 }
