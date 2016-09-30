@@ -176,7 +176,7 @@ typedef struct
   XcpLightMessage_t ctoCmdMsg;
 #endif
   XcpLightMessage_t ctoReplyMsg;
-  uint32_t mta;
+  void * mta;
 } XcpLightInternals_t;
 
 

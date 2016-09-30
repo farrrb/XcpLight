@@ -28,9 +28,9 @@ void XcpLight_SendMessage(XcpLightMessage_t * pMsg)
   replyMsg = *pMsg;
 }
 
-uint32_t XcpLight_GetPointer(uint32_t address, uint8_t address_extension)
+void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension)
 {
-  return address;
+  return (void *)(address);
 }
 
 extern void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * pMem)
