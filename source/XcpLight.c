@@ -33,6 +33,7 @@
 #define MSG_NONE (0)
 #define MSG_SEND (1)
 
+/** EVALUATE CONFIG **/
 #ifdef XCPLIGHT_CFG_ENABLE_STATIC_INLINE
   #define XCP_STATIC_INLINE static inline
 #else
@@ -46,14 +47,12 @@
 //------------------------------------------------------------------------------
 // local data
 //------------------------------------------------------------------------------
-
 /* internal data structure for state etc. */
 XcpLightInternals_t _XcpLightData = {0};
 
 //------------------------------------------------------------------------------
 // local macro functions
 //------------------------------------------------------------------------------
-
 #define Uint32FromUint8Ptr(ptr) (*((uint32_t *)(ptr)))
 
 //#define Uint32FromUint8Ptr(ptr) ( ((*((ptr)+3)&0xFFu) << 24u) | \
