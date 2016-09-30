@@ -71,6 +71,8 @@ XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessag
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 
 //------------------------------------------------------------------------------
 // local functions
@@ -222,6 +224,48 @@ XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_
   return MSG_SEND;
 }
 
+XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  uint32_t tmpAddress = 0;
+  uint8_t  tmpAddressExt = 0;
+  uint8_t  length = (pMsg->payload[1] & 0xFFu);
+
+  if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+  {
+    pReplyMsg->length = length + 1u;
+    pReplyMsg->payload[0] = XCP_PID_RES;
+    tmpAddressExt  = (pMsg->payload[3] & 0xFFu);
+    tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
+
+    _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
+
+    XcpLight_ReadFromAddress((uint8_t *)_XcpLightData.mta, length, &(pReplyMsg->payload[1]));
+  }
+  else
+  {
+    _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  uint32_t tmpAddress = 0;
+  uint8_t  tmpAddressExt = 0;
+
+  pReplyMsg->length = 2u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u;
+
+  tmpAddressExt = (pMsg->payload[3] & 0xFFu);
+  tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
+
+  _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
+
+  return MSG_SEND;
+}
+
 /******************************************************************************/
 /*** external area ***/
 /******************************************************************************/
@@ -298,48 +342,11 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_SHORT_UPLOAD:
-          {
-            uint32_t tmpAddress = 0;
-            uint8_t  tmpAddressExt = 0;
-            uint8_t  length = (pMsg->payload[1] & 0xFFu);
-
-            if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
-            {
-              pReplyMsg->length = length + 1u;
-              pReplyMsg->payload[0] = XCP_PID_RES;
-              tmpAddressExt  = (pMsg->payload[3] & 0xFFu);
-              tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
-
-              _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
-
-              XcpLight_ReadFromAddress((uint8_t *)_XcpLightData.mta, length, &(pReplyMsg->payload[1]));
-
-              sendFlag = 1;
-            }
-            else
-            {
-              _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
-              sendFlag = 1;
-            }
-          }
+          sendFlag = _CmdShortUpload(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_SET_MTA:
-          {
-            uint32_t tmpAddress = 0;
-            uint8_t  tmpAddressExt = 0;
-
-            pReplyMsg->length = 2u;
-            pReplyMsg->payload[0] = XCP_PID_RES;
-            pReplyMsg->payload[1] = 0x00u;
-
-            tmpAddressExt = (pMsg->payload[3] & 0xFFu);
-            tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
-
-            _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
-
-            sendFlag = 1;
-          }
+          sendFlag = _CmdSetMta(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_DOWNLOAD:
