@@ -29,6 +29,10 @@
 #define XCP_VER_PROTOCOL_LAYER    (0x01u)
 #define XCP_VER_TRANSPORT_LAYER   (0x01u)
 
+/** INTERNAL RETURN CODES **/
+#define MSG_NONE (0)
+#define MSG_SEND (1)
+
 //------------------------------------------------------------------------------
 // local struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
@@ -54,12 +58,56 @@ XcpLightInternals_t _XcpLightData = {0};
 //------------------------------------------------------------------------------
 // local functions - prototypes
 //------------------------------------------------------------------------------
-
-void _XcpLight_BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
+static inline void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
+static inline int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 
 //------------------------------------------------------------------------------
 // local functions
 //------------------------------------------------------------------------------
+static inline void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
+{
+  pMsg->length = 2u;
+  pMsg->payload[0] = XCP_PID_ERR;
+  pMsg->payload[1] = errorCode;
+}
+
+static inline int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+{
+  /* process the connect command anytime -> independence of state */
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+
+  pReplyMsg->payload[1] = 0u;
+  #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
+  pReplyMsg->payload[1] |= XCP_RES_CALPAG;
+  #endif
+  #ifdef XCPLIGHT_CFG_ENABLE_DAQ
+  pReplyMsg->payload[1] |= XCP_RES_DAQ;
+  #endif
+  #ifdef XCPLIGHT_CFG_ENABLE_STIM
+  pReplyMsg->payload[1] |= XCP_RES_STIM;
+  #endif
+  #ifdef XCPLIGHT_CFG_ENABLE_PGM
+  pReplyMsg->payload[1] |= XCP_RES_PGM;
+  #endif
+
+  pReplyMsg->payload[2] = 0x80u; // @todo COMM_MODE_BASIC
+  pReplyMsg->payload[3] = XCPLIGHT_CFG_XTO_LENGTH;
+  pReplyMsg->payload[4] = XCPLIGHT_CFG_XTO_LENGTH;
+  pReplyMsg->payload[5] = 0x00u; // reserved
+  pReplyMsg->payload[6] = XCP_VER_PROTOCOL_LAYER;
+  pReplyMsg->payload[7] = XCP_VER_TRANSPORT_LAYER;
+
+  /* protect all resources */
+  #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
+  _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
+  #endif
+
+  /* set session to connected state */
+  _XcpLightData.sessionStatus |= XCP_SES_CONNECTED; // mark session as active (connected)
+
+  return MSG_SEND;
+}
 
 /******************************************************************************/
 /*** external area ***/
@@ -92,46 +140,18 @@ void XcpLight_UpdateTimestampCounter(void)
 void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 {
   XcpLightMessage_t * pReplyMsg = &(_XcpLightData.ctoReplyMsg);
+
+#ifdef XCPLIGHT_CFG_DEBUG_CMD_MSG
+  _XcpLightData.ctoCmdMsg = *pMsg; /* copy to internal state (for ext. debugging) */
+#endif
+
   uint8_t sendFlag = 0;
 
   _XcpLightData.currentCommand = (pMsg->payload[0] & 0xFFu);
 
   if(_XcpLightData.currentCommand == XCP_CMD_CONNECT)
   {
-    /* process the connect command anytime -> independence of state */
-    pReplyMsg->length = 8u;
-    pReplyMsg->payload[0] = XCP_PID_RES;
-
-    pReplyMsg->payload[1] = 0u;
-    #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
-    pReplyMsg->payload[1] |= XCP_RES_CALPAG;
-    #endif
-    #ifdef XCPLIGHT_CFG_ENABLE_DAQ
-    pReplyMsg->payload[1] |= XCP_RES_DAQ;
-    #endif
-    #ifdef XCPLIGHT_CFG_ENABLE_STIM
-    pReplyMsg->payload[1] |= XCP_RES_STIM;
-    #endif
-    #ifdef XCPLIGHT_CFG_ENABLE_PGM
-    pReplyMsg->payload[1] |= XCP_RES_PGM;
-    #endif
-
-    pReplyMsg->payload[2] = 0x80u; // @todo COMM_MODE_BASIC
-    pReplyMsg->payload[3] = XCPLIGHT_CFG_XTO_LENGTH;
-    pReplyMsg->payload[4] = XCPLIGHT_CFG_XTO_LENGTH;
-    pReplyMsg->payload[5] = 0x00u; // reserved
-    pReplyMsg->payload[6] = XCP_VER_PROTOCOL_LAYER;
-    pReplyMsg->payload[7] = XCP_VER_TRANSPORT_LAYER;
-
-    /* protect all resources */
-    #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
-    _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
-    #endif
-
-    /* set session to connected state */
-    _XcpLightData.sessionStatus |= XCP_SES_CONNECTED; // mark session as active (connected)
-
-    sendFlag = 1;
+    sendFlag = _CmdConnect(pMsg, pReplyMsg);
   }
   else
   {
@@ -158,7 +178,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 
         case XCP_CMD_SYNCH:
           {
-            _XcpLight_BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
+            _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
             sendFlag = 1;
           }
           break;
@@ -247,7 +267,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
             }
             else
             {
-              _XcpLight_BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+              _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
               sendFlag = 1;
             }
           }
@@ -285,7 +305,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
             }
             else
             {
-              _XcpLight_BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+              _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
               sendFlag = 1;
             }
           }
@@ -310,7 +330,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 
         default:
           {
-            _XcpLight_BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+            _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
             sendFlag = 1;
           }
           break;
@@ -327,13 +347,6 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
   {
     XcpLight_SendMessage(pReplyMsg);
   }
-}
-
-void _XcpLight_BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
-{
-  pMsg->length = 2u;
-  pMsg->payload[0] = XCP_PID_ERR;
-  pMsg->payload[1] = errorCode;
 }
 
 int XcpLight_Event(uint8_t eventNo)

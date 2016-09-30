@@ -172,6 +172,9 @@ typedef struct
   uint8_t sessionStatus;
   uint8_t protectionStatus;
   uint8_t currentCommand;
+#ifdef XCPLIGHT_CFG_DEBUG_CMD_MSG
+  XcpLightMessage_t ctoCmdMsg;
+#endif
   XcpLightMessage_t ctoReplyMsg;
   uint32_t mta;
 } XcpLightInternals_t;
