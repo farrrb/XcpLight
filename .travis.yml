@@ -14,7 +14,7 @@ compiler:
 
 # Build steps
 script:
-  - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch
+  - export C_INCLUDE_PATH=/usr/include/$(gcc -print-multiarch)
   - mkdir build
   - cd build
   - cmake .. && cmake --build . && ctest --output-on-failure
