@@ -206,6 +206,22 @@ XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLigh
   return MSG_SEND;
 }
 
+XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  uint32_t sampleTs = _XcpLightData.timestampCounter;
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u; /* reserved */
+  pReplyMsg->payload[2] = 0x00u; /* reserved */
+  pReplyMsg->payload[3] = 0x00u; /* reserved */
+  pReplyMsg->payload[4] = ((sampleTs >>  0) & 0xFFu);
+  pReplyMsg->payload[5] = ((sampleTs >>  8) & 0xFFu);
+  pReplyMsg->payload[6] = ((sampleTs >> 16) & 0xFFu);
+  pReplyMsg->payload[7] = ((sampleTs >> 24) & 0xFFu);
+
+  return MSG_SEND;
+}
+
 /******************************************************************************/
 /*** external area ***/
 /******************************************************************************/
@@ -347,20 +363,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_GET_DAQ_CLOCK:
-          {
-            uint32_t sampleTs = _XcpLightData.timestampCounter;
-            pReplyMsg->length = 8u;
-            pReplyMsg->payload[0] = XCP_PID_RES;
-            pReplyMsg->payload[1] = 0x00u; /* reserved */
-            pReplyMsg->payload[2] = 0x00u; /* reserved */
-            pReplyMsg->payload[3] = 0x00u; /* reserved */
-            pReplyMsg->payload[4] = ((sampleTs >>  0) & 0xFFu);
-            pReplyMsg->payload[5] = ((sampleTs >>  8) & 0xFFu);
-            pReplyMsg->payload[6] = ((sampleTs >> 16) & 0xFFu);
-            pReplyMsg->payload[7] = ((sampleTs >> 24) & 0xFFu);
-
-            sendFlag = 1;
-          }
+          sendFlag = _CmdGetDaqClock(pMsg, pReplyMsg);
           break;
 
         default:
