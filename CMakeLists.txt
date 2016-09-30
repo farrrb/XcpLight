@@ -8,6 +8,10 @@ project(XcpLight)
 enable_language(C)
 enable_testing()
 
+# compiler flags
+set(CMAKE_C_FLAGS "-O2 -Wall")
+set(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
+
 # add include include directories
 include_directories(source)
 include_directories(externals/Unity/src)
