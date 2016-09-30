@@ -30,3 +30,4 @@ endmacro (Add_XcpLight_Test)
 # add tests
 Add_XcpLight_Test(BasicCommands   5)
 Add_XcpLight_Test(LoginProcedure  5)
+Add_XcpLight_Test(Timestamp       5)

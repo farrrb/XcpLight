@@ -47,14 +47,63 @@ void tearDown(void)
 
 /* the actual tests */
 
-void test_Template(void)
+void test_TimestampAfterInit(void)
 {
-  TEST_ASSERT_TRUE(1);
+  XcpLight_Init();
+  TEST_ASSERT_EQUAL_UINT32(0u, _XcpLightData.timestampCounter);
+}
+
+void test_TimestampIncrement(void)
+{
+  XcpLight_Init();
+  XcpLight_UpdateTimestampCounter();
+  TEST_ASSERT_EQUAL_UINT32(1u, _XcpLightData.timestampCounter);
+  XcpLight_UpdateTimestampCounter();
+  TEST_ASSERT_EQUAL_UINT32(2u, _XcpLightData.timestampCounter);
+  XcpLight_UpdateTimestampCounter();
+  XcpLight_UpdateTimestampCounter();
+  XcpLight_UpdateTimestampCounter();
+  TEST_ASSERT_EQUAL_UINT32(5u, _XcpLightData.timestampCounter);
+}
+
+void test_TimestampWrapAround(void)
+{
+  XcpLight_Init();
+  _XcpLightData.timestampCounter = 0xFFFFFFFFu;
+  TEST_ASSERT_EQUAL_UINT32(0xFFFFFFFFu, _XcpLightData.timestampCounter);
+  XcpLight_UpdateTimestampCounter();
+  TEST_ASSERT_EQUAL_UINT32(0u, _XcpLightData.timestampCounter);
+}
+
+void test_CmdGetDaqClock(void)
+{
+  XcpLight_Init();
+  _XcpLightData.sessionStatus |= XCP_SES_CONNECTED; /* cheat here to get an active session! */
+  _XcpLightData.timestampCounter = 0xDEADBEEFu;
+
+  cmdMsg.length     = 1u;
+  cmdMsg.payload[0] = XCP_CMD_GET_DAQ_CLOCK; /* GET_DAQ_CLOCK */
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(8u,          replyMsg.length);     /* 8 bytes of payload */
+  TEST_ASSERT_EQUAL_UINT8(XCP_PID_RES, replyMsg.payload[0]); /* Ok:GET_DAQ_CLOCK */
+
+  TEST_ASSERT_EQUAL_UINT8(0x00u, replyMsg.payload[1]); /* reserved */
+  TEST_ASSERT_EQUAL_UINT8(0x00u, replyMsg.payload[2]); /* reserved */
+  TEST_ASSERT_EQUAL_UINT8(0x00u, replyMsg.payload[3]); /* reserved */
+  TEST_ASSERT_EQUAL_UINT8(0xEFu, replyMsg.payload[4]); /* timestamp byte 0 */
+  TEST_ASSERT_EQUAL_UINT8(0xBEu, replyMsg.payload[5]); /* timestamp byte 1 */
+  TEST_ASSERT_EQUAL_UINT8(0xADu, replyMsg.payload[6]); /* timestamp byte 2 */
+  TEST_ASSERT_EQUAL_UINT8(0xDEu, replyMsg.payload[7]); /* timestamp byte 3 */
 }
 
 int main(void)
 {
   UNITY_BEGIN();
-  RUN_TEST(test_Template);
+  RUN_TEST(test_TimestampAfterInit);
+  RUN_TEST(test_TimestampIncrement);
+  RUN_TEST(test_TimestampWrapAround);
+  RUN_TEST(test_CmdGetDaqClock);
   return UNITY_END();
 }

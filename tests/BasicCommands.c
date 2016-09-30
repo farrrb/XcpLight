@@ -50,7 +50,7 @@ void tearDown(void)
 void test_CmdConnect(void)
 {
   cmdMsg.length     = 2u;
-  cmdMsg.payload[0] = 0xFFu; /* CONNECT */
+  cmdMsg.payload[0] = XCP_CMD_CONNECT; /* CONNECT */
   cmdMsg.payload[1] = 0x00u; /* mode=0 */
 
   XcpLight_Init();
@@ -63,7 +63,7 @@ void test_CmdConnect(void)
 void test_CmdDisconnect(void)
 {
   cmdMsg.length     = 1u;
-  cmdMsg.payload[0] = 0xFEu; /* DISCONNECT */
+  cmdMsg.payload[0] = XCP_CMD_DISCONNECT; /* DISCONNECT */
 
   /* let's see if we are connected... because we can only disconnect if the session is active */
   TEST_ASSERT_BITS(XCP_SES_CONNECTED, XCP_SES_CONNECTED, _XcpLightData.sessionStatus);
