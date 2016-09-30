@@ -138,7 +138,6 @@ void test_CmdGetDaqResolutionInfo(void)
   TEST_ASSERT_EQUAL_UINT8(0xFF, replyMsg.payload[0]); /* Ok:GET_DAQ_DAQ_RESOLUTION_INFO */
 }
 
-
 int main(void)
 {
   UNITY_BEGIN();
