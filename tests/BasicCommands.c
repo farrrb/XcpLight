@@ -101,6 +101,19 @@ void test_CmdGetCommModeInfo(void)
   TEST_ASSERT(replyMsg.payload[7]); /* driver version is not zero */
 }
 
+void test_CmdGetStatus(void)
+{
+  SET_SESSION_CONNECTED();
+  cmdMsg.length = 1u;
+  cmdMsg.payload[0] = XCP_CMD_GET_STATUS;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(   6u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFF,  replyMsg.payload[0]); /* Ok:GET_STATUS */
+  TEST_ASSERT_BITS(XCP_SES_CONNECTED, 0xFFu, replyMsg.payload[1]); /* Ok:GET_COMM_MODE_INFO */
+}
+
 int main(void)
 {
   UNITY_BEGIN();
@@ -109,7 +122,7 @@ int main(void)
   RUN_TEST(test_CmdDisconnect);
   RUN_TEST(test_CmdSynch);
   RUN_TEST(test_CmdGetCommModeInfo);
-
+  RUN_TEST(test_CmdGetStatus);
 
   return UNITY_END();
 }

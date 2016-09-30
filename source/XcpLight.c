@@ -69,6 +69,7 @@ XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t erro
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 
 //------------------------------------------------------------------------------
 // local functions
@@ -156,6 +157,19 @@ XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pCmdMsg, XcpLightM
   return MSG_SEND;
 }
 
+XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  pReplyMsg->length = 6u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = _XcpLightData.sessionStatus;
+  pReplyMsg->payload[2] = _XcpLightData.protectionStatus;
+  pReplyMsg->payload[3] = 0x00u; /* STATE_NUMBER: ECU_STATES not supported */
+
+  pReplyMsg->payload[4] = 0x00u; // @todo: Session configuration id
+  pReplyMsg->payload[5] = 0x00u; // @todo: Session configuration id
+
+  return MSG_SEND;
+}
 /******************************************************************************/
 /*** external area ***/
 /******************************************************************************/
@@ -220,17 +234,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_GET_STATUS:
-          {
-            pReplyMsg->length = 6u;
-            pReplyMsg->payload[0] = XCP_PID_RES;
-            pReplyMsg->payload[1] = _XcpLightData.sessionStatus;
-            pReplyMsg->payload[2] = _XcpLightData.protectionStatus;
-            pReplyMsg->payload[3] = 0x00u; /* STATE_NUMBER: ECU_STATES not supported */
-
-            pReplyMsg->payload[4] = 0x00u; // @todo: Session configuration id
-            pReplyMsg->payload[5] = 0x00u; // @todo: Session configuration id
-            sendFlag = 1;
-          }
+          sendFlag = _CmdGetStatus(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_GET_DAQ_PROCESSOR_INFO:
