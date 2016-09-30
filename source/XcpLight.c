@@ -33,6 +33,12 @@
 #define MSG_NONE (0)
 #define MSG_SEND (1)
 
+#ifdef XCPLIGHT_CFG_ENABLE_STATIC_INLINE
+  #define XCP_STATIC_INLINE static inline
+#else
+  #define XCP_STATIC_INLINE
+#endif
+
 //------------------------------------------------------------------------------
 // local struct and type definitions (struct, enum and typedef)
 //------------------------------------------------------------------------------
@@ -58,20 +64,20 @@ XcpLightInternals_t _XcpLightData = {0};
 //------------------------------------------------------------------------------
 // local functions - prototypes
 //------------------------------------------------------------------------------
-static inline void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
-static inline int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
+XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 
 //------------------------------------------------------------------------------
 // local functions
 //------------------------------------------------------------------------------
-static inline void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
+XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
 {
   pMsg->length = 2u;
   pMsg->payload[0] = XCP_PID_ERR;
   pMsg->payload[1] = errorCode;
 }
 
-static inline int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
 {
   /* process the connect command anytime -> independence of state */
   pReplyMsg->length = 8u;

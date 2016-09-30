@@ -15,6 +15,9 @@
 
 //#define XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
 
+/** OPTIMIZATION **/
+#define XCPLIGHT_CFG_ENABLE_STATIC_INLINE /* compiler / c-standard specific */
+
 /** DEBUG **/
 #define XCPLIGHT_CFG_DEBUG_CMD_MSG
 
