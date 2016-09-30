@@ -14,8 +14,10 @@ compiler:
 
 # Build steps
 script:
+  # add 32-bit support to docker-vm
   - export C_INCLUDE_PATH=/usr/include/$(gcc -print-multiarch)
   - sudo apt-get install gcc-multilib
+  # real build
   - mkdir build
   - cd build
   - cmake .. && cmake --build . && ctest --output-on-failure
