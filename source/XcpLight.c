@@ -65,6 +65,7 @@ XcpLightInternals_t _XcpLightData = {0};
 // local functions - prototypes
 //------------------------------------------------------------------------------
 XCP_STATIC_INLINE void _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
+
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
@@ -136,6 +137,22 @@ XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessag
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
 {
   _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+{
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u; // reserved
+  pReplyMsg->payload[2] = 0x00u; // @todo: COMM_MODE_OPTIONAL
+  pReplyMsg->payload[3] = 0x00u; // reserved
+  pReplyMsg->payload[4] = 0x00u; // @todo: MAX_BS
+  pReplyMsg->payload[5] = 0x00u; // @todo: MAX_ST
+  pReplyMsg->payload[6] = 0x00u; // @todo: QUEUE_SIZE
+  pReplyMsg->payload[7] = XCP_VER_DRIVER;
+
   return MSG_SEND;
 }
 
@@ -199,18 +216,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_GET_COMM_MODE_INFO:
-          {
-            pReplyMsg->length = 8u;
-            pReplyMsg->payload[0] = XCP_PID_RES;
-            pReplyMsg->payload[1] = 0x00u; // reserved
-            pReplyMsg->payload[2] = 0x00u; // @todo: COMM_MODE_OPTIONAL
-            pReplyMsg->payload[3] = 0x00u; // reserved
-            pReplyMsg->payload[4] = 0x00u; // @todo: MAX_BS
-            pReplyMsg->payload[5] = 0x00u; // @todo: MAX_ST
-            pReplyMsg->payload[6] = 0x00u; // @todo: QUEUE_SIZE
-            pReplyMsg->payload[7] = XCP_VER_DRIVER;
-            sendFlag = 1;
-          }
+          sendFlag = _CmdGetCommModeInfo(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_GET_STATUS:
