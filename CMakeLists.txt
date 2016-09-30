@@ -19,7 +19,9 @@ add_library(XcpLight STATIC source/XcpLight.c source/XcpLight_config.c)
 # add Unity
 add_subdirectory(externals)
 
-# tests
+# tests setup
+include_directories(tests)
+
 macro (Add_XcpLight_Test NAME TIMEOUT)
     add_executable(${NAME} tests/${NAME}.c)
     target_link_libraries(${NAME} XcpLight Unity)

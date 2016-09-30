@@ -3,6 +3,8 @@
 
 #include "unity.h"
 
+#include "TestHelper.h"
+
 #include "XcpLight.h"
 #include "XcpLight_internals.h"
 
@@ -78,7 +80,8 @@ void test_TimestampWrapAround(void)
 void test_CmdGetDaqClock(void)
 {
   XcpLight_Init();
-  _XcpLightData.sessionStatus |= XCP_SES_CONNECTED; /* cheat here to get an active session! */
+
+  SET_SESSION_CONNECTED(); /* cheat here to get an active session! */
   _XcpLightData.timestampCounter = 0xDEADBEEFu;
 
   cmdMsg.length     = 1u;
