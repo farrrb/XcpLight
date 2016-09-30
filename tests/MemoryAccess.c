@@ -80,9 +80,49 @@ void test_ShortUpload(void)
   TEST_ASSERT_EQUAL_UINT8(0xDE, replyMsg.payload[4]);
 }
 
+void test_Download(void)
+{
+  uint32_t addr = (uint32_t)(&downloadVariable);
+  TEST_ASSERT_EQUAL_UINT32(0xDEADBEEFu, downloadVariable);
+
+  SET_SESSION_CONNECTED();
+
+  cmdMsg.length = 8u;
+  cmdMsg.payload[0] = XCP_CMD_SET_MTA;
+  cmdMsg.payload[1] = 0u;
+  cmdMsg.payload[2] = 0u;
+  cmdMsg.payload[3] = 0u;
+  cmdMsg.payload[4] = ((addr >>  0) & 0xFFu);
+  cmdMsg.payload[5] = ((addr >>  8) & 0xFFu);
+  cmdMsg.payload[6] = ((addr >> 16) & 0xFFu);
+  cmdMsg.payload[7] = ((addr >> 24) & 0xFFu);
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT(addr == _XcpLightData.mta);
+
+  clearCmdMessage();
+  clearReplyMessage();
+
+  cmdMsg.length = 6u;
+  cmdMsg.payload[0] = XCP_CMD_DOWNLOAD;
+  cmdMsg.payload[1] = 4u;
+  cmdMsg.payload[2] = 0x37u;
+  cmdMsg.payload[3] = 0x13u;
+  cmdMsg.payload[4] = 0xB1u;
+  cmdMsg.payload[5] = 0xFAu;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT(downloadVariable == 0xFAB11337);
+}
+
 int main(void)
 {
   UNITY_BEGIN();
+
   RUN_TEST(test_ShortUpload);
+  RUN_TEST(test_Download);
+
   return UNITY_END();
 }
