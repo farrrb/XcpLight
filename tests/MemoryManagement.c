@@ -7,10 +7,8 @@
 #include "XcpLight_internals.h"
 #include "XcpLightMem.h"
 
-#include "TestHelper.h"
-
 XcpLightMemory_t mem = {0};
-uint8_t Buffer[4] = {1u, 2u, 3u, 4u};
+uint8_t Buffer[6] = {1u, 2u, 3u, 4u, 0xFAu, 0xB1u};
 
 /* test setUp / tearDown */
 void setUp(void)
@@ -47,6 +45,9 @@ void test_XcpLightMem_Clear(void)
   TEST_ASSERT_EQUAL_UINT8(0u, mem.pBuffer[1]);
   TEST_ASSERT_EQUAL_UINT8(0u, mem.pBuffer[2]);
   TEST_ASSERT_EQUAL_UINT8(0u, mem.pBuffer[3]);
+  /* guard statement */
+  TEST_ASSERT_EQUAL_UINT8(0xFAu, mem.pBuffer[4]);
+  TEST_ASSERT_EQUAL_UINT8(0xB1u, mem.pBuffer[5]);
 }
 
 void test_XcpLightMem_Alloc(void)
