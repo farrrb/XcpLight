@@ -68,10 +68,18 @@ XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t error
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+
 XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+
+XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+
 
 //------------------------------------------------------------------------------
 // local functions
@@ -173,56 +181,6 @@ XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t 
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
-{
-  pReplyMsg->length = 8u;
-  pReplyMsg->payload[0] = XCP_PID_RES;
-  pReplyMsg->payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
-
-  pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
-  pReplyMsg->payload[3] = 0x00u; // @todo: MAX_DAQ
-
-  pReplyMsg->payload[4] = 0x00u; // @todo: MAX_EVENT_CHANNEL
-  pReplyMsg->payload[5] = 0x00u; // @todo: MAX_EVENT_CHANNEL
-
-  pReplyMsg->payload[6] = 0x00u; // @todo: MIN_DAQ
-  pReplyMsg->payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
-
-  return MSG_SEND;
-}
-
-XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
-{
-  pReplyMsg->length = 8u;
-  pReplyMsg->payload[0] = XCP_PID_RES;
-  pReplyMsg->payload[1] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
-  pReplyMsg->payload[2] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
-  pReplyMsg->payload[3] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
-  pReplyMsg->payload[4] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_STIM
-  pReplyMsg->payload[5] = 0x00u; // @todo: TIMESTAMP_MODE
-
-  pReplyMsg->payload[6] = 0x00u; // @todo: TIMESTAMP_TICKS
-  pReplyMsg->payload[7] = 0x00u; // @todo: TIMESTAMP_TICKS
-
-  return MSG_SEND;
-}
-
-XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
-{
-  uint32_t sampleTs = _XcpLightData.timestampCounter;
-  pReplyMsg->length = 8u;
-  pReplyMsg->payload[0] = XCP_PID_RES;
-  pReplyMsg->payload[1] = 0x00u; /* reserved */
-  pReplyMsg->payload[2] = 0x00u; /* reserved */
-  pReplyMsg->payload[3] = 0x00u; /* reserved */
-  pReplyMsg->payload[4] = ((sampleTs >>  0) & 0xFFu);
-  pReplyMsg->payload[5] = ((sampleTs >>  8) & 0xFFu);
-  pReplyMsg->payload[6] = ((sampleTs >> 16) & 0xFFu);
-  pReplyMsg->payload[7] = ((sampleTs >> 24) & 0xFFu);
-
-  return MSG_SEND;
-}
-
 XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
   uint32_t tmpAddress = 0;
@@ -281,6 +239,61 @@ XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   }
 
   return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  uint32_t sampleTs = _XcpLightData.timestampCounter;
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u; /* reserved */
+  pReplyMsg->payload[2] = 0x00u; /* reserved */
+  pReplyMsg->payload[3] = 0x00u; /* reserved */
+  pReplyMsg->payload[4] = ((sampleTs >>  0) & 0xFFu);
+  pReplyMsg->payload[5] = ((sampleTs >>  8) & 0xFFu);
+  pReplyMsg->payload[6] = ((sampleTs >> 16) & 0xFFu);
+  pReplyMsg->payload[7] = ((sampleTs >> 24) & 0xFFu);
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
+
+  pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
+  pReplyMsg->payload[3] = 0x00u; // @todo: MAX_DAQ
+
+  pReplyMsg->payload[4] = 0x00u; // @todo: MAX_EVENT_CHANNEL
+  pReplyMsg->payload[5] = 0x00u; // @todo: MAX_EVENT_CHANNEL
+
+  pReplyMsg->payload[6] = 0x00u; // @todo: MIN_DAQ
+  pReplyMsg->payload[7] = 0x00u; // @todo: DAQ_KEY_BYTE
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  pReplyMsg->length = 8u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_DAQ
+  pReplyMsg->payload[2] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_DAQ
+  pReplyMsg->payload[3] = 0x00u; // @todo: GRANULARITY_ODT_ENTRY_SIZE_STIM
+  pReplyMsg->payload[4] = 0x00u; // @todo: MAX_ODT_ENTRY_SIZE_STIM
+  pReplyMsg->payload[5] = 0x00u; // @todo: TIMESTAMP_MODE
+
+  pReplyMsg->payload[6] = 0x00u; // @todo: TIMESTAMP_TICKS
+  pReplyMsg->payload[7] = 0x00u; // @todo: TIMESTAMP_TICKS
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
 }
 
 /******************************************************************************/
@@ -392,6 +405,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_FREE_DAQ:
+          sendFlag = _CmdFreeDaq(pMsg, pReplyMsg);
         case XCP_CMD_ALLOC_DAQ:
         case XCP_CMD_ALLOC_ODT:
         case XCP_CMD_ALLOC_ODT_ENTRY:
@@ -400,6 +414,8 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
         case XCP_CMD_SET_DAQ_LIST_MODE:
         case XCP_CMD_START_STOP_DAQ_LIST:
         case XCP_CMD_START_STOP_SYNCH:
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+          break;
         /* DAQ: data aquisition commands -> end */
 
         /* PGM: programming commands -> begin */
