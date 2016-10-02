@@ -7,6 +7,8 @@
 /** CONFIG **/
 #define XCPLIGHT_CFG_XTO_LENGTH 8
 
+#define XCPLIGHT_CFG_DAQ_MEMORY_SIZE 256 /* [byte] */
+
 /** OPTIONS **/
 //#define XCPLIGHT_CFG_ENABLE_CALPAG
 //#define XCPLIGHT_CFG_ENABLE_DAQ

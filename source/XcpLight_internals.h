@@ -6,16 +6,16 @@ extern "C"
 {
 #endif
 
-//------------------------------------------------------------------------------
-// macro constants
-//------------------------------------------------------------------------------
+/*****************************************************************************/
+/* macro constants                                                           */
+/*****************************************************************************/
 
 /** PACKET IDENTIFIER **/
 #define XCP_PID_RES                     (0xFFu) ///< response
 #define XCP_PID_ERR                     (0xFEu) ///< error
 #define XCP_PID_EVT                     (0xFDu) ///< event
 #define XCP_PID_SRV                     (0xFCu) ///< service
-// note PID 0xFB ... 0x00 absolute or relative ODT number for DAQ
+/* note PID 0xFB ... 0x00 absolute or relative ODT number for DAQ */
 
 /** RESOURCE CODES **/
 #define XCP_RES_CALPAG              (0x01u)
@@ -161,9 +161,9 @@ extern "C"
 #define XCP_CMD_PROGRAM_MAX             (0xC9u)
 #define XCP_CMD_PROGRAM_VERIFY          (0xC8u)
 
-//------------------------------------------------------------------------------
-// struct and type definitions (struct, enum and typedef)
-//------------------------------------------------------------------------------
+/*****************************************************************************/
+/* struct and type definitions (struct, enum and typedef)                    */
+/*****************************************************************************/
 
 /* internal data structure */
 typedef struct
@@ -177,6 +177,9 @@ typedef struct
 #endif
   XcpLightMessage_t ctoReplyMsg;
   void * mta;
+
+  /* block of memory for storage of daq lists & samples */
+  uint8_t memory[XCPLIGHT_CFG_DAQ_MEMORY_SIZE];
 } XcpLightInternals_t;
 
 
