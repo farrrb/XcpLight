@@ -325,7 +325,9 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 
   if(_XcpLightData.currentCommand == XCP_CMD_CONNECT)
   {
+    /* STD : standard commands :: connect begin */
     sendFlag = _CmdConnect(pMsg, pReplyMsg);
+    /* STD : standard commands :: connect end */
   }
   else
   {
@@ -334,6 +336,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
       /* in connected state process all other commands*/
       switch(_XcpLightData.currentCommand)
       {
+        /* STD : standard commands -> begin */
         case XCP_CMD_DISCONNECT:
           sendFlag = _CmdDisconnect(pMsg, pReplyMsg);
           break;
@@ -350,6 +353,32 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           sendFlag = _CmdGetStatus(pMsg, pReplyMsg);
           break;
 
+        case XCP_CMD_SET_MTA:
+          sendFlag = _CmdSetMta(pMsg, pReplyMsg);
+          break;
+
+        case XCP_CMD_UPLOAD:
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN); /* @todo: implement me*/
+
+        case XCP_CMD_SHORT_UPLOAD:
+          sendFlag = _CmdShortUpload(pMsg, pReplyMsg);
+          break;
+        /* STD : standard commands -> end */
+
+        /* CAL : standard commands -> end */
+        case XCP_CMD_DOWNLOAD:
+          sendFlag = _CmdDownload(pMsg, pReplyMsg);
+          break;
+        case XCP_CMD_SHORT_DOWNLOAD:
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+          break;
+        /* CAL : standard commands -> end */
+
+        /* PAG: page switching commands -> begin */
+        /* @note: not supported yet */
+        /* PAG: page switching commands -> end */
+
+        /* DAQ: data aquisition commands -> begin */
         case XCP_CMD_GET_DAQ_PROCESSOR_INFO:
           sendFlag = _CmdGetDaqProcessorInfo(pMsg, pReplyMsg);
           break;
@@ -358,21 +387,24 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           sendFlag = _CmdGetDaqResolutionInfo(pMsg, pReplyMsg);
           break;
 
-        case XCP_CMD_SHORT_UPLOAD:
-          sendFlag = _CmdShortUpload(pMsg, pReplyMsg);
-          break;
-
-        case XCP_CMD_SET_MTA:
-          sendFlag = _CmdSetMta(pMsg, pReplyMsg);
-          break;
-
-        case XCP_CMD_DOWNLOAD:
-          sendFlag = _CmdDownload(pMsg, pReplyMsg);
-          break;
-
         case XCP_CMD_GET_DAQ_CLOCK:
           sendFlag = _CmdGetDaqClock(pMsg, pReplyMsg);
           break;
+
+        case XCP_CMD_FREE_DAQ:
+        case XCP_CMD_ALLOC_DAQ:
+        case XCP_CMD_ALLOC_ODT:
+        case XCP_CMD_ALLOC_ODT_ENTRY:
+        case XCP_CMD_SET_DAQ_PTR:
+        case XCP_CMD_WRITE_DAQ:
+        case XCP_CMD_SET_DAQ_LIST_MODE:
+        case XCP_CMD_START_STOP_DAQ_LIST:
+        case XCP_CMD_START_STOP_SYNCH:
+        /* DAQ: data aquisition commands -> end */
+
+        /* PGM: programming commands -> begin */
+        /* @note: not supported yet */
+        /* PGM: programming commands -> end */
 
         default:
           sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
