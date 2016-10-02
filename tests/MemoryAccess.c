@@ -72,13 +72,13 @@ void test_ShortUpload(void)
 
   XcpLight_CommandProcessor(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(  5u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFF, replyMsg.payload[0]); /* Ok:SHORT_UPLOAD */
+  TEST_ASSERT_EQUAL_UINT8(   5u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:SHORT_UPLOAD */
   /* 0xDEADBEEFu */
-  TEST_ASSERT_EQUAL_UINT8(0xEF, replyMsg.payload[1]);
-  TEST_ASSERT_EQUAL_UINT8(0xBE, replyMsg.payload[2]);
-  TEST_ASSERT_EQUAL_UINT8(0xAD, replyMsg.payload[3]);
-  TEST_ASSERT_EQUAL_UINT8(0xDE, replyMsg.payload[4]);
+  TEST_ASSERT_EQUAL_UINT8(0xEFu, replyMsg.payload[1]);
+  TEST_ASSERT_EQUAL_UINT8(0xBEu, replyMsg.payload[2]);
+  TEST_ASSERT_EQUAL_UINT8(0xADu, replyMsg.payload[3]);
+  TEST_ASSERT_EQUAL_UINT8(0xDEu, replyMsg.payload[4]);
 }
 
 void test_Download(void)

@@ -50,16 +50,25 @@ void tearDown(void)
 
 /* the actual tests */
 
-void test_Template(void)
+void test_DaqSetup(void)
 {
-  TEST_ASSERT_TRUE(1);
+  SET_SESSION_CONNECTED();
+  TEST_ASSERT_EQUAL_UINT8(0x00u, _XcpLightData.protectionStatus);
+
+  cmdMsg.length = 1u;
+  cmdMsg.payload[0] = XCP_CMD_FREE_DAQ;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:FREE_DAQ */
 }
 
 int main(void)
 {
   UNITY_BEGIN();
 
-  RUN_TEST(test_Template);
+  RUN_TEST(test_DaqSetup);
 
   return UNITY_END();
 }

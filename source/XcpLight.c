@@ -293,7 +293,7 @@ XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLigh
 
 XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
-  if(_XcpLightData.protectionStatus & XCP_RES_DAQ)
+  if(_XcpLightData.protectionStatus & XCP_PRT_DAQ)
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_ACCESS_LOCKED);
   }
@@ -419,6 +419,8 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 
         case XCP_CMD_FREE_DAQ:
           sendFlag = _CmdFreeDaq(pMsg, pReplyMsg);
+          break;
+
         case XCP_CMD_ALLOC_DAQ:
         case XCP_CMD_ALLOC_ODT:
         case XCP_CMD_ALLOC_ODT_ENTRY:
