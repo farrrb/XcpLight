@@ -1,8 +1,8 @@
 /* MIT License see LICENSE file             */
 /* - Copyright (c) 2016 0xFAB - Fabian Zahn */
 
-#ifndef __XCPLIGHT_H
-#define __XCPLIGHT_H
+#ifndef __XCPLIGHTMEM_H
+#define __XCPLIGHTMEM_H
 
 #ifdef __cplusplus
 extern "C"
@@ -19,12 +19,14 @@ extern "C"
 /* struct and type definitions (struct, enum and typedef)                    */
 /*****************************************************************************/
 
-/* command transfer object */
 typedef struct
 {
-  uint8_t payload[XCPLIGHT_CFG_XTO_LENGTH];
-  uint8_t length;
-} XcpLightMessage_t;
+  uint32_t size;
+  uint32_t used;
+  /* block of memory for storage of daq lists & samples */
+  uint8_t * pBuffer;   /* pointer to storage */
+  uint8_t * pAlloc; /* current allocation ptr */
+} XcpLightMemory_t;
 
 /*****************************************************************************/
 /* external data                                                             */
@@ -39,19 +41,12 @@ typedef struct
 /*****************************************************************************/
 
 /* api functions for xcp integration */
-void XcpLight_Init(void);
-void XcpLight_UpdateTimestampCounter(void);
-void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg);
-int  XcpLight_Event(uint8_t eventNo);
-
-/* interface to transport layer */
-extern void XcpLight_SendMessage(XcpLightMessage_t * pMsg);
-extern void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension);
-extern void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * pMem);
-extern void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * pMem);
+int XcpLightMem_Init(XcpLightMemory_t * pMemData, uint8_t * pBuffer, uint32_t size);
+uint8_t * XcpLightMem_Alloc(XcpLightMemory_t * pMemData, uint32_t size);
+int XcpLightMem_Clear(XcpLightMemory_t * pMemData);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __XCPLIGHT_H
+#endif // __XCPLIGHTMEM_H

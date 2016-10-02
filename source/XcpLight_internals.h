@@ -1,3 +1,6 @@
+/* MIT License see LICENSE file             */
+/* - Copyright (c) 2016 0xFAB - Fabian Zahn */
+
 #ifndef __XCPLIGHT_INTERNALS_H
 #define __XCPLIGHT_INTERNALS_H
 
@@ -5,6 +8,8 @@
 extern "C"
 {
 #endif
+
+#include "XcpLightMem.h"
 
 /*****************************************************************************/
 /* macro constants                                                           */
@@ -177,9 +182,7 @@ typedef struct
 #endif
   XcpLightMessage_t ctoReplyMsg;
   void * mta;
-
-  /* block of memory for storage of daq lists & samples */
-  uint8_t memory[XCPLIGHT_CFG_DAQ_MEMORY_SIZE];
+  XcpLightMemory_t mem;
 } XcpLightInternals_t;
 
 

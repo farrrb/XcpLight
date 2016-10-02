@@ -1,3 +1,6 @@
+/* MIT License see LICENSE file             */
+/* - Copyright (c) 2016 0xFAB - Fabian Zahn */
+
 #ifndef __XCPLIGHT_CONFIG_H
 #define __XCPLIGHT_CONFIG_H
 

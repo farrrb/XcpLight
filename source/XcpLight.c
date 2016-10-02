@@ -1,4 +1,8 @@
+/* MIT License see LICENSE file             */
+/* - Copyright (c) 2016 0xFAB - Fabian Zahn */
+
 #include "XcpLight.h"
+#include "XcpLightMem.h"
 #include "XcpLight_internals.h"
 
 /*
@@ -45,6 +49,8 @@
 /*****************************************************************************/
 /* internal data structure for state etc. */
 XcpLightInternals_t _XcpLightData = {0};
+/* memory block for daq lists and samples */
+uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE];
 
 /*****************************************************************************/
 /* local macro functions                                                     */
@@ -304,10 +310,6 @@ XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * 
     return MSG_SEND;
   }
 }
-
-/*****************************************************************************/
-/* external data                                                             */
-/*****************************************************************************/
 
 /*****************************************************************************/
 /* external functions                                                        */
