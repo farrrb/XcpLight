@@ -293,7 +293,20 @@ XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLigh
 
 XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
-  return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+  if(_XcpLightData.protectionStatus & XCP_RES_DAQ)
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_ACCESS_LOCKED);
+  }
+  else
+  {
+    _XcpLightData.sessionStatus &= ~(XCP_SES_DAQ_RUNNING);
+    /* @todo: clear all daq lists*/
+
+    pReplyMsg->length = 1u;
+    pReplyMsg->payload[0] = XCP_PID_RES;
+
+    return MSG_SEND;
+  }
 }
 
 /******************************************************************************/
