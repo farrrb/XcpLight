@@ -58,6 +58,8 @@ void test_Template(void)
 int main(void)
 {
   UNITY_BEGIN();
+
   RUN_TEST(test_Template);
+
   return UNITY_END();
 }
