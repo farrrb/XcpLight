@@ -14,6 +14,7 @@ This projects at developing a lightweight implementation of the "Universal Measu
 ## Limitations
 - Block transfer is not supported (UPLOAD, DOWNLOAD, PROGRAM)
 - ECU_STATES (STATE_NUMBER) is not supported
+- RESUME is not supported
 
 ## Todos
 - Provide basic self information about the driver configuration

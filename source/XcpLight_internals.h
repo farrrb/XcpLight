@@ -170,8 +170,26 @@ extern "C"
 /* struct and type definitions (struct, enum and typedef)                    */
 /*****************************************************************************/
 
+/* odt */
+typedef struct XcpLightOdt
+{
+  /* @todo: revisit me */
+  struct XcpLightOdt * pNext;
+} XcpLightOdt_t;
+
+/* daq list */
+typedef struct XcpDaqList
+{
+  /* @todo: revisit me */
+  uint8_t eventChannel;
+  uint8_t priority;
+  XcpLightOdt_t * pOdtEntry;
+
+  struct XcpDaqList * pNext; /* pointer to next entry*/
+} XcpLightDaqList_t;
+
 /* internal data structure */
-typedef struct
+typedef struct XcpLightInternals
 {
   uint32_t timestampCounter;
   uint8_t sessionStatus;
@@ -182,7 +200,11 @@ typedef struct
 #endif
   XcpLightMessage_t ctoReplyMsg;
   void * mta;
-  XcpLightMemory_t mem;
+
+  /* DAQ */
+  XcpLightMemory_t mem; /* memory for daq lists & samples */
+  XcpLightDaqList_t * pDaqList;
+
 } XcpLightInternals_t;
 
 

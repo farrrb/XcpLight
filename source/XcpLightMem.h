@@ -19,7 +19,7 @@ extern "C"
 /* struct and type definitions (struct, enum and typedef)                    */
 /*****************************************************************************/
 
-typedef struct
+typedef struct XcpLightMemory
 {
   uint32_t size;
   uint32_t used;
