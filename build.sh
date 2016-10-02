@@ -2,5 +2,5 @@
 rm -rf build
 mkdir build
 cd build
-cmake .. && cmake --build . && ctest --output-on-failure
+cmake .. && cmake --build . && ctest -V
 cd ..
