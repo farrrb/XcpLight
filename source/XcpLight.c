@@ -406,6 +406,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
         /* @note: not supported yet */
         /* PGM: programming commands -> end */
 
+        /* Whenever a command is unknown -> build and send an error message */
         default:
           sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
           break;
