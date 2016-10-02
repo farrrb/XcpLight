@@ -205,8 +205,8 @@ typedef struct XcpLightInternals
   /* DAQ */
 #ifdef XCPLIGHT_CFG_ENABLE_DAQ
   XcpLightMemory_t mem; /* memory management struct for daq lists & samples */
-  uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE]; /* raw mem */
   XcpLightDaqList_t * pDaqList;
+  uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE]; /* raw mem */
 #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 } XcpLightInternals_t;

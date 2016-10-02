@@ -80,6 +80,7 @@ XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_
 XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 /*****************************************************************************/
@@ -319,6 +320,29 @@ XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * 
     return MSG_SEND;
   }
 }
+
+XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  uint16_t daqCount;
+
+  daqCount  = (pMsg->payload[2] & 0xFFu);
+  daqCount |= (pMsg->payload[3] & 0xFFu) << 8;
+
+  _XcpLightData.pDaqList = (XcpLightDaqList_t *)XcpLightMem_Alloc(&(_XcpLightData.mem), (daqCount * sizeof(XcpLightDaqList_t)));
+
+  if(_XcpLightData.pDaqList == 0)
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_MEMORY_OVERFLOW);
+  }
+  else
+  {
+    pReplyMsg->length = 1u;
+    pReplyMsg->payload[0] = XCP_PID_RES;
+
+    return MSG_SEND;
+  }
+}
+
 #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 /*****************************************************************************/
@@ -434,6 +458,9 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_ALLOC_DAQ:
+          sendFlag = _CmdAllocDaq(pMsg, pReplyMsg);
+          break;
+
         case XCP_CMD_ALLOC_ODT:
         case XCP_CMD_ALLOC_ODT_ENTRY:
         case XCP_CMD_SET_DAQ_PTR:
