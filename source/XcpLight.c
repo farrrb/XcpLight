@@ -49,8 +49,6 @@
 /*****************************************************************************/
 /* internal data structure for state etc. */
 XcpLightInternals_t _XcpLightData = {0};
-/* memory block for daq lists and samples */
-uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE];
 
 /*****************************************************************************/
 /* local macro functions                                                     */
@@ -77,11 +75,12 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_
 XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 
+#ifdef XCPLIGHT_CFG_ENABLE_DAQ
 XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
-
+#endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 /*****************************************************************************/
 /* local functions                                                           */
@@ -102,18 +101,21 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t
   pReplyMsg->payload[0] = XCP_PID_RES;
 
   pReplyMsg->payload[1] = 0u;
-  #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
+#ifdef XCPLIGHT_CFG_ENABLE_CALPAG
   pReplyMsg->payload[1] |= XCP_RES_CALPAG;
-  #endif
-  #ifdef XCPLIGHT_CFG_ENABLE_DAQ
+#endif
+
+#ifdef XCPLIGHT_CFG_ENABLE_DAQ
   pReplyMsg->payload[1] |= XCP_RES_DAQ;
-  #endif
-  #ifdef XCPLIGHT_CFG_ENABLE_STIM
+#endif
+
+#ifdef XCPLIGHT_CFG_ENABLE_STIM
   pReplyMsg->payload[1] |= XCP_RES_STIM;
-  #endif
-  #ifdef XCPLIGHT_CFG_ENABLE_PGM
+#endif
+
+#ifdef XCPLIGHT_CFG_ENABLE_PGM
   pReplyMsg->payload[1] |= XCP_RES_PGM;
-  #endif
+#endif
 
   pReplyMsg->payload[2] = 0x80u; // @todo COMM_MODE_BASIC
   pReplyMsg->payload[3] = XCPLIGHT_CFG_XTO_LENGTH;
@@ -243,6 +245,7 @@ XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   return MSG_SEND;
 }
 
+#ifdef XCPLIGHT_CFG_ENABLE_DAQ
 XCP_STATIC_INLINE int _CmdGetDaqClock(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
   uint32_t sampleTs = _XcpLightData.timestampCounter;
@@ -302,7 +305,13 @@ XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * 
   else
   {
     _XcpLightData.sessionStatus &= ~(XCP_SES_DAQ_RUNNING);
-    /* @todo: clear all daq lists*/
+
+    _XcpLightData.pDaqList = 0;
+
+    if(XcpLightMem_Clear(&(_XcpLightData.mem)))
+    {
+      return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+    }
 
     pReplyMsg->length = 1u;
     pReplyMsg->payload[0] = XCP_PID_RES;
@@ -310,6 +319,7 @@ XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * 
     return MSG_SEND;
   }
 }
+#endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 /*****************************************************************************/
 /* external functions                                                        */
@@ -324,6 +334,13 @@ void XcpLight_Init(void)
   #else
   _XcpLightData.protectionStatus = 0u;
   #endif
+
+#ifdef XCPLIGHT_CFG_ENABLE_DAQ
+  /* DAQ */
+  /* @todo: error checking and reaction */
+  XcpLightMem_Init(&(_XcpLightData.mem), &(_XcpLightData.daqMemoryBuffer[0]), XCPLIGHT_CFG_DAQ_MEMORY_SIZE);
+  XcpLightMem_Clear(&(_XcpLightData.mem));
+#endif
 }
 
 void XcpLight_UpdateTimestampCounter(void)
@@ -399,6 +416,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
         /* PAG: page switching commands -> end */
 
         /* DAQ: data aquisition commands -> begin */
+      #ifdef XCPLIGHT_CFG_ENABLE_DAQ
         case XCP_CMD_GET_DAQ_PROCESSOR_INFO:
           sendFlag = _CmdGetDaqProcessorInfo(pMsg, pReplyMsg);
           break;
@@ -425,6 +443,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
         case XCP_CMD_START_STOP_SYNCH:
           sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
           break;
+      #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
         /* DAQ: data aquisition commands -> end */
 
         /* PGM: programming commands -> begin */

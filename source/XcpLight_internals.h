@@ -9,6 +9,7 @@ extern "C"
 {
 #endif
 
+#include "XcpLight_config.h"
 #include "XcpLightMem.h"
 
 /*****************************************************************************/
@@ -202,8 +203,11 @@ typedef struct XcpLightInternals
   void * mta;
 
   /* DAQ */
-  XcpLightMemory_t mem; /* memory for daq lists & samples */
+#ifdef XCPLIGHT_CFG_ENABLE_DAQ
+  XcpLightMemory_t mem; /* memory management struct for daq lists & samples */
+  uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE]; /* raw mem */
   XcpLightDaqList_t * pDaqList;
+#endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 } XcpLightInternals_t;
 
