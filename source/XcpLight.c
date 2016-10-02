@@ -358,7 +358,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           break;
 
         case XCP_CMD_UPLOAD:
-          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN); /* @todo: implement me*/
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN); /* @todo: implement me */
 
         case XCP_CMD_SHORT_UPLOAD:
           sendFlag = _CmdShortUpload(pMsg, pReplyMsg);
@@ -370,7 +370,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           sendFlag = _CmdDownload(pMsg, pReplyMsg);
           break;
         case XCP_CMD_SHORT_DOWNLOAD:
-          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN); /* @todo: implement me */
           break;
         /* CAL : standard commands -> end */
 
