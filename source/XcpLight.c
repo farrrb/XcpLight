@@ -328,6 +328,11 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   daqCount  = (pMsg->payload[2] & 0xFFu);
   daqCount |= (pMsg->payload[3] & 0xFFu) << 8;
 
+  if(daqCount > 0xFFu)
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
   _XcpLightData.pDaqList = (XcpLightDaqList_t *)XcpLightMem_Alloc(&(_XcpLightData.mem), (daqCount * sizeof(XcpLightDaqList_t)));
 
   if(_XcpLightData.pDaqList == 0)

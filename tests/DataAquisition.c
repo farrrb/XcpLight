@@ -63,6 +63,19 @@ void test_DaqSetup(void)
   TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:FREE_DAQ */
 
+cmdMsg.length = 4u;
+  cmdMsg.payload[0] = XCP_CMD_ALLOC_DAQ;
+  cmdMsg.payload[1] = 0u;
+  /* alloc 256 daq lists */
+  cmdMsg.payload[2] = 0xFFu;
+  cmdMsg.payload[3] = 0x01u;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(   2u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFEu, replyMsg.payload[0]); /* Error:ALLOC_DAQ */
+  TEST_ASSERT_EQUAL_UINT8(0x22u, replyMsg.payload[1]); /* XCP_ERR_OUT_OF_RANGE */
+
   cmdMsg.length = 4u;
   cmdMsg.payload[0] = XCP_CMD_ALLOC_DAQ;
   cmdMsg.payload[1] = 0u;
@@ -72,7 +85,7 @@ void test_DaqSetup(void)
   XcpLight_CommandProcessor(&cmdMsg);
 
   TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:FREE_DAQ */
+  TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:ALLOC_DAQ */
 
 }
 
@@ -81,6 +94,7 @@ int main(void)
   UNITY_BEGIN();
 
   RUN_TEST(test_DaqSetup);
+
 
   return UNITY_END();
 }

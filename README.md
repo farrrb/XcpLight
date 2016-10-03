@@ -13,15 +13,16 @@ This projects at developing a lightweight implementation of the "Universal Measu
 
 ## Limitations
 - Block transfer is not supported (UPLOAD, DOWNLOAD, PROGRAM)
-- ECU_STATES (STATE_NUMBER) is not supported
-- RESUME is not supported
+- The "ECU_STATES" (STATE_NUMBER) are not supported
+- The "RESUME" mode is not supported
+- The number of DAQ lists is limited to 255 (one byte) in order to keep DTO packets as small as possible 
 
 ## Todos
 - Provide basic self information about the driver configuration
 - Synchronous data readout via dynamic DAQ lists
-- Choose a unit test framework & implement tests
 
 ## Integration / API
+- t.b.d.
 
 ## Resources
 [XCP on Wikipedia](https://en.wikipedia.org/wiki/XCP_(protocol))   
