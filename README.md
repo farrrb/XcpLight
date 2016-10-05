@@ -25,5 +25,6 @@ This projects at developing a lightweight implementation of the "Universal Measu
 - t.b.d.
 
 ## Resources
-[XCP on Wikipedia](https://en.wikipedia.org/wiki/XCP_(protocol))   
+[XCP on ASAM Wiki](https://wiki.asam.net/display/STANDARDS/ASAM+MCD-1+XCP)   
 [XCP Reference Book by Vector Informatik GmbH](http://vector.com/portal/medien/solutions_for/xcp/XCP_ReferenceBook_V1.0_EN.pdf)   
+[XCP on Wikipedia](https://en.wikipedia.org/wiki/XCP_(protocol))   
