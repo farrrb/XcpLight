@@ -503,5 +503,12 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 
 int XcpLight_Event(uint8_t eventNo)
 {
-  return 0;
+  if(_XcpLightData.sessionStatus & XCP_SES_DAQ_RUNNING)
+  {
+    return 0;
+  }
+  else
+  {
+    return -1;
+  }
 }
