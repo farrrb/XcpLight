@@ -167,6 +167,21 @@ extern "C"
 #define XCP_CMD_PROGRAM_MAX             (0xC9u)
 #define XCP_CMD_PROGRAM_VERIFY          (0xC8u)
 
+/** DAQ Timestamp Units **/
+#define XCP_DAQ_TIMESTAMP_UNIT_1NS    (0x0u)
+#define XCP_DAQ_TIMESTAMP_UNIT_10NS   (0x1u)
+#define XCP_DAQ_TIMESTAMP_UNIT_100NS  (0x2u)
+#define XCP_DAQ_TIMESTAMP_UNIT_1US    (0x3u)
+#define XCP_DAQ_TIMESTAMP_UNIT_10US   (0x4u)
+#define XCP_DAQ_TIMESTAMP_UNIT_100US  (0x5u)
+#define XCP_DAQ_TIMESTAMP_UNIT_1MS    (0x6u)
+#define XCP_DAQ_TIMESTAMP_UNIT_10MS   (0x7u)
+#define XCP_DAQ_TIMESTAMP_UNIT_100MS  (0x8u)
+#define XCP_DAQ_TIMESTAMP_UNIT_1S     (0x9u)
+#define XCP_DAQ_TIMESTAMP_UNIT_1PS    (0xAu)
+#define XCP_DAQ_TIMESTAMP_UNIT_10PS   (0xBu)
+#define XCP_DAQ_TIMESTAMP_UNIT_100PS  (0xCu)
+
 /*****************************************************************************/
 /* struct and type definitions (struct, enum and typedef)                    */
 /*****************************************************************************/
