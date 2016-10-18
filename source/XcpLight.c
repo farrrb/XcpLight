@@ -81,6 +81,10 @@ XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLight
 XCP_STATIC_INLINE int _CmdGetDaqResolutionInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdSetDaqPtr(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdWriteDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdSetDaqListMode(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdStartStopDaqList(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 /*****************************************************************************/
@@ -267,7 +271,17 @@ XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLight
 {
   pReplyMsg->length = 8u;
   pReplyMsg->payload[0] = XCP_PID_RES;
-  pReplyMsg->payload[1] = 0x00u; // @todo: DAQ_PROPERTIES
+
+  /* DAQ_PROPERTIES */
+  pReplyMsg->payload[1] =  0x00u;
+  pReplyMsg->payload[1] |= 0x01u; /* DAQ_CONFIG_TYPE::dynamic */
+//  pReplyMsg->payload[1] |= 0x02u; /* PRESCALER_SUPPORTED::supported */
+//  pReplyMsg->payload[1] |= 0x04u; /* RESUME_SUPPORTED::supported */
+//  pReplyMsg->payload[1] |= 0x08u; /* BIT_STIM_SUPPORTED::supported */
+  pReplyMsg->payload[1] |= 0x10u; /* TIMESTAMP_SUPPORTED::supported */
+//  pReplyMsg->payload[1] |= 0x20u; /* PID_OFF_SUPPORTED::supported*/
+//  pReplyMsg->payload[1] |= 0x40u; /* OVERLOAD_MSB::Overload indication type */
+//  pReplyMsg->payload[1] |= 0x80u; /* OVERLOAD_EVENT::Overload indication type */
 
   pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
   pReplyMsg->payload[3] = 0x00u; // @todo: MAX_DAQ
@@ -346,6 +360,48 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 
     return MSG_SEND;
   }
+}
+
+XCP_STATIC_INLINE int _CmdSetDaqPtr(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  //@todo fixme -> set a daq ptr, would you?
+
+  pReplyMsg->length = 1u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdWriteDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  //@todo fixme -> write thingies to daq management structure...
+
+  pReplyMsg->length = 1u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdSetDaqListMode(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  //@todo fixme -> write set modes and timestamp etc.
+
+  pReplyMsg->length = 1u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdStartStopDaqList(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  //@todo fixme -> set list active
+
+  pReplyMsg->length = 2u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+
+  pReplyMsg->payload[1] = 0x00u; // @todo: DOIT
+
+  return MSG_SEND;
 }
 
 #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
@@ -466,12 +522,24 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           sendFlag = _CmdAllocDaq(pMsg, pReplyMsg);
           break;
 
+        case XCP_CMD_SET_DAQ_PTR:
+          sendFlag = _CmdSetDaqPtr(pMsg, pReplyMsg);
+          break;
+
+        case XCP_CMD_WRITE_DAQ:
+          sendFlag = _CmdWriteDaq(pMsg, pReplyMsg);
+          break;
+
+        case XCP_CMD_SET_DAQ_LIST_MODE:
+          sendFlag = _CmdSetDaqListMode(pMsg, pReplyMsg);
+          break;
+
+        case XCP_CMD_START_STOP_DAQ_LIST:
+          sendFlag = _CmdStartStopDaqList(pMsg, pReplyMsg);
+          break;
+
         case XCP_CMD_ALLOC_ODT:
         case XCP_CMD_ALLOC_ODT_ENTRY:
-        case XCP_CMD_SET_DAQ_PTR:
-        case XCP_CMD_WRITE_DAQ:
-        case XCP_CMD_SET_DAQ_LIST_MODE:
-        case XCP_CMD_START_STOP_DAQ_LIST:
         case XCP_CMD_START_STOP_SYNCH:
           sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
           break;
