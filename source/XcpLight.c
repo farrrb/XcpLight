@@ -325,6 +325,9 @@ XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * 
     _XcpLightData.sessionStatus &= ~(XCP_SES_DAQ_RUNNING);
 
     _XcpLightData.daqProcessor.pList = 0;
+    _XcpLightData.daqProcessor.daqCount = 0;
+    _XcpLightData.daqProcessor.odtCount = 0;
+    _XcpLightData.daqProcessor.odtEntryCount = 0;
 
     if(XcpLightMem_Clear(&(_XcpLightData.daqProcessor.mem)))
     {
@@ -342,10 +345,15 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 {
   uint16_t daqCount;
 
+  if( _XcpLightData.daqProcessor.odtCount || _XcpLightData.daqProcessor.odtEntryCount )
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
+  }
+
   daqCount  = (pMsg->payload[2] & 0xFFu);
   daqCount |= (pMsg->payload[3] & 0xFFu) << 8;
 
-  if(daqCount > 0xFFu)
+  if(daqCount > 0x7Fu)
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
@@ -358,6 +366,8 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   }
   else
   {
+    _XcpLightData.daqProcessor.daqCount++;
+
     pReplyMsg->length = 1u;
     pReplyMsg->payload[0] = XCP_PID_RES;
 
@@ -369,6 +379,18 @@ XCP_STATIC_INLINE int _CmdAllocOdt(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 {
   //@todo fixme -> alloc some odt's
 
+  if( (!_XcpLightData.daqProcessor.daqCount) || _XcpLightData.daqProcessor.odtEntryCount )
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
+  }
+
+  if( (_XcpLightData.daqProcessor.odtCount + 1u) > 127u )
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
+  _XcpLightData.daqProcessor.odtCount++;
+
   pReplyMsg->length = 1u;
   pReplyMsg->payload[0] = XCP_PID_RES;
 
@@ -378,6 +400,13 @@ XCP_STATIC_INLINE int _CmdAllocOdt(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 XCP_STATIC_INLINE int _CmdAllocOdtEntry(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
   //@todo fixme -> alloc some odt's
+
+  if( (!_XcpLightData.daqProcessor.daqCount) || (!_XcpLightData.daqProcessor.odtCount) )
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
+  }
+
+  _XcpLightData.daqProcessor.odtEntryCount++;
 
   pReplyMsg->length = 1u;
   pReplyMsg->payload[0] = XCP_PID_RES;

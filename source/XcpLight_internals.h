@@ -217,9 +217,10 @@ typedef struct XcpLightDaqProcessor
   XcpLightMemory_t mem; /* memory management struct for daq lists & samples */
   uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE]; /* raw mem -> do not use this directly! */
 
-  XcpLightDaqList_t * pList;
-  uint8_t daqListCount;
-  uint8_t daqOdtCount;
+  XcpLightDaqList_t * pList;  /* pointer to first daq list */
+  uint8_t daqCount;           /* no of daq lists */
+  uint8_t odtCount;           /* no of odt */
+  uint8_t odtEntryCount;      /* no of odt entries */
 } XcpLightDaqProcessor_t;
 
 /* internal data structure */
