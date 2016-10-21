@@ -186,22 +186,29 @@ extern "C"
 /* struct and type definitions (struct, enum and typedef)                    */
 /*****************************************************************************/
 
+/* odt entry */
+typedef struct XcpLightOdtEntry
+{
+  /* @todo: revisit me */
+  struct XcpLightOdtEntry * pNext; /* pointer to next odt entry */
+} XcpLightOdtEntry_t;
+
 /* odt */
 typedef struct XcpLightOdt
 {
   /* @todo: revisit me */
-  struct XcpLightOdt * pNext;
+  struct XcpLightOdt * pNext; /* pointer to next odt*/
 } XcpLightOdt_t;
 
 /* daq list */
-typedef struct XcpDaqList
+typedef struct XcpLightDaqList
 {
   /* @todo: revisit me */
   uint8_t eventChannel;
   uint8_t priority;
-  XcpLightOdt_t * pOdtEntry;
+  XcpLightOdt_t * pOdt;
 
-  struct XcpDaqList * pNext; /* pointer to next entry*/
+  struct XcpLightDaqList * pNext; /* pointer to next daq list */
 } XcpLightDaqList_t;
 
 /* internal data structure */
