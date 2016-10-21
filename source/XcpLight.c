@@ -324,9 +324,9 @@ XCP_STATIC_INLINE int _CmdFreeDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t * 
   {
     _XcpLightData.sessionStatus &= ~(XCP_SES_DAQ_RUNNING);
 
-    _XcpLightData.pDaqList = 0;
+    _XcpLightData.daqProcessor.pList = 0;
 
-    if(XcpLightMem_Clear(&(_XcpLightData.mem)))
+    if(XcpLightMem_Clear(&(_XcpLightData.daqProcessor.mem)))
     {
       return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
     }
@@ -350,9 +350,9 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
 
-  _XcpLightData.pDaqList = (XcpLightDaqList_t *)XcpLightMem_Alloc(&(_XcpLightData.mem), (daqCount * sizeof(XcpLightDaqList_t)));
+  _XcpLightData.daqProcessor.pList = (XcpLightDaqList_t *)XcpLightMem_Alloc(&(_XcpLightData.daqProcessor.mem), (daqCount * sizeof(XcpLightDaqList_t)));
 
-  if(_XcpLightData.pDaqList == 0)
+  if(_XcpLightData.daqProcessor.pList  == 0)
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_MEMORY_OVERFLOW);
   }
@@ -456,8 +456,8 @@ void XcpLight_Init(void)
 #ifdef XCPLIGHT_CFG_ENABLE_DAQ
   /* DAQ */
   /* @todo: error checking and reaction */
-  XcpLightMem_Init(&(_XcpLightData.mem), &(_XcpLightData.daqMemoryBuffer[0]), XCPLIGHT_CFG_DAQ_MEMORY_SIZE);
-  XcpLightMem_Clear(&(_XcpLightData.mem));
+  XcpLightMem_Init(&(_XcpLightData.daqProcessor.mem), &(_XcpLightData.daqProcessor.daqMemoryBuffer[0]), XCPLIGHT_CFG_DAQ_MEMORY_SIZE);
+  XcpLightMem_Clear(&(_XcpLightData.daqProcessor.mem));
 #endif
 }
 

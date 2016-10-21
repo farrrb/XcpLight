@@ -211,6 +211,17 @@ typedef struct XcpLightDaqList
   struct XcpLightDaqList * pNext; /* pointer to next daq list */
 } XcpLightDaqList_t;
 
+/* daq processor */
+typedef struct XcpLightDaqProcessor
+{
+  XcpLightMemory_t mem; /* memory management struct for daq lists & samples */
+  uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE]; /* raw mem -> do not use this directly! */
+
+  XcpLightDaqList_t * pList;
+  uint8_t daqListCount;
+  uint8_t daqOdtCount;
+} XcpLightDaqProcessor_t;
+
 /* internal data structure */
 typedef struct XcpLightInternals
 {
@@ -226,10 +237,8 @@ typedef struct XcpLightInternals
 
   /* DAQ */
 #ifdef XCPLIGHT_CFG_ENABLE_DAQ
-  XcpLightMemory_t mem; /* memory management struct for daq lists & samples */
-  XcpLightDaqList_t * pDaqList;
-  uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE]; /* raw mem */
-#endif /* XCPLIGHT_CFG_ENABLE_DAQ */
+  XcpLightDaqProcessor_t daqProcessor;
+  #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 } XcpLightInternals_t;
 
