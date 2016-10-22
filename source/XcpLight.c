@@ -345,6 +345,7 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 {
   uint16_t daqCount;
 
+  /* check for valid daq configuration sequence */
   if( _XcpLightData.daqProcessor.odtCount || _XcpLightData.daqProcessor.odtEntryCount )
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
@@ -366,7 +367,7 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   }
   else
   {
-    _XcpLightData.daqProcessor.daqCount++;
+    _XcpLightData.daqProcessor.daqCount += daqCount;
 
     pReplyMsg->length = 1u;
     pReplyMsg->payload[0] = XCP_PID_RES;
@@ -377,19 +378,37 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 
 XCP_STATIC_INLINE int _CmdAllocOdt(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
-  //@todo fixme -> alloc some odt's
+  uint16_t daqListNo;
+  uint8_t  odtCount;
 
+  /* check for valid daq configuration sequence */
   if( (!_XcpLightData.daqProcessor.daqCount) || _XcpLightData.daqProcessor.odtEntryCount )
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
   }
 
-  if( (_XcpLightData.daqProcessor.odtCount + 1u) > 127u )
+  /* check if there is a valid daq list */
+  daqListNo  = (pMsg->payload[2] & 0xFFu);
+  daqListNo |= (pMsg->payload[3] & 0xFFu) << 8;
+
+  if( _XcpLightData.daqProcessor.daqCount < (daqListNo + 1u) )
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
 
-  _XcpLightData.daqProcessor.odtCount++;
+  /* check if there is enough address space for odts */
+  odtCount  = (pMsg->payload[4] & 0xFFu);
+
+  if( (_XcpLightData.daqProcessor.odtCount + odtCount) > 127u )
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
+  // @todo fixme
+  // -> alloc some odt's
+  // -> and assign them to a daq list
+  // -> return positively
+  _XcpLightData.daqProcessor.odtCount += odtCount;
 
   pReplyMsg->length = 1u;
   pReplyMsg->payload[0] = XCP_PID_RES;
@@ -399,14 +418,45 @@ XCP_STATIC_INLINE int _CmdAllocOdt(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 
 XCP_STATIC_INLINE int _CmdAllocOdtEntry(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
-  //@todo fixme -> alloc some odt's
+  uint16_t daqListNo;
+  uint8_t odtNo;
+  uint8_t odtEntryCount;
 
+  /* check for valid daq configuration sequence */
   if( (!_XcpLightData.daqProcessor.daqCount) || (!_XcpLightData.daqProcessor.odtCount) )
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
   }
 
-  _XcpLightData.daqProcessor.odtEntryCount++;
+  /* check if there is a valid daq list */
+  daqListNo  = (pMsg->payload[2] & 0xFFu);
+  daqListNo |= (pMsg->payload[3] & 0xFFu) << 8;
+
+  if( _XcpLightData.daqProcessor.daqCount < (daqListNo + 1u) )
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
+  /* check if there is a valid odt */
+  odtNo  = (pMsg->payload[4] & 0xFFu);
+
+  if( 0 ) // @todo implement me!
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
+  odtEntryCount = (pMsg->payload[5] & 0xFFu);
+
+  if( (_XcpLightData.daqProcessor.odtEntryCount + odtEntryCount) > 127u )
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+
+  // @todo fixme
+  // -> alloc some odt entries
+  // -> and assign them to the corresponding odts
+  // -> return positively
+  _XcpLightData.daqProcessor.odtEntryCount += odtEntryCount;
 
   pReplyMsg->length = 1u;
   pReplyMsg->payload[0] = XCP_PID_RES;

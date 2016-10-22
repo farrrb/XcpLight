@@ -15,7 +15,9 @@ This projects at developing a lightweight implementation of the "Universal Measu
 - Block transfer is not supported (UPLOAD, DOWNLOAD, PROGRAM)
 - The "ECU_STATES" (STATE_NUMBER) are not supported
 - The "RESUME" mode is not supported
-- The number of DAQ lists is limited to 255 (one byte) in order to keep DTO packets as small as possible 
+- The number of DAQ lists is limited to 127 (one byte with overflow) in order to keep DTO packets as small as possible 
+- The number of ODTs is limited as well to 127 (see above)
+- DAQ timestamp is fixed and exactly one byte (for now)
 
 ## Todos
 - Provide basic self information about the driver configuration
