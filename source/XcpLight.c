@@ -470,7 +470,7 @@ XCP_STATIC_INLINE int _CmdAllocOdtEntry(XcpLightMessage_t * pMsg, XcpLightMessag
   /* check if there is a valid odt */
   odtNo  = (pMsg->payload[4] & 0xFFu);
 
-  if( 0 ) // @todo implement me!
+  if( odtNo > 127u ) // @todo implement me!
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
