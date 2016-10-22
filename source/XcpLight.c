@@ -413,10 +413,18 @@ XCP_STATIC_INLINE int _CmdAllocOdt(XcpLightMessage_t * pMsg, XcpLightMessage_t *
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
 
+  /* check if the daq list is empty (you can alloq odts to a daq list only once! */
+  if (_XcpLightData.daqProcessor.pList[daqListNo].odtCount)
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
+  }
+
   // @todo fixme
   // -> alloc some odt's
   // -> and assign them to a daq list
   // -> return positively
+
+  _XcpLightData.daqProcessor.pList[daqListNo].odtCount = odtCount;
   _XcpLightData.daqProcessor.odtCount += odtCount;
 
   pReplyMsg->length = 1u;
