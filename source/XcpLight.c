@@ -419,18 +419,31 @@ XCP_STATIC_INLINE int _CmdAllocOdt(XcpLightMessage_t * pMsg, XcpLightMessage_t *
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
   }
 
-  // @todo fixme
-  // -> alloc some odt's
-  // -> and assign them to a daq list
-  // -> return positively
+  _XcpLightData.daqProcessor.pList[daqListNo].pOdt = (XcpLightOdt_t *)XcpLightMem_Alloc(&(_XcpLightData.daqProcessor.mem), (odtCount * sizeof(XcpLightOdt_t)));
 
-  _XcpLightData.daqProcessor.pList[daqListNo].odtCount = odtCount;
-  _XcpLightData.daqProcessor.odtCount += odtCount;
+  if(_XcpLightData.daqProcessor.pList  == 0)
+  {
+    return _BuildErrorMessage(pReplyMsg, XCP_ERR_MEMORY_OVERFLOW);
+  }
+  else
+  {
+    int i;
+    XcpLightOdt_t * pList = _XcpLightData.daqProcessor.pList[daqListNo].pOdt;
 
-  pReplyMsg->length = 1u;
-  pReplyMsg->payload[0] = XCP_PID_RES;
+    for(i=1; i < odtCount; i++)
+    {
+      pList->pNext = _XcpLightData.daqProcessor.pList[daqListNo].pOdt+i;
+      pList = pList->pNext;
+    }
 
-  return MSG_SEND;
+    _XcpLightData.daqProcessor.pList[daqListNo].odtCount = odtCount;
+    _XcpLightData.daqProcessor.odtCount += odtCount;
+
+    pReplyMsg->length = 1u;
+    pReplyMsg->payload[0] = XCP_PID_RES;
+
+    return MSG_SEND;
+  }
 }
 
 XCP_STATIC_INLINE int _CmdAllocOdtEntry(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)

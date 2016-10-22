@@ -197,6 +197,9 @@ typedef struct XcpLightOdtEntry
 typedef struct XcpLightOdt
 {
   /* @todo: revisit me */
+  uint8_t odtEntryCount;
+  XcpLightOdtEntry_t * pEntry;
+
   struct XcpLightOdt * pNext; /* pointer to next odt*/
 } XcpLightOdt_t;
 
