@@ -206,6 +206,7 @@ typedef struct XcpLightDaqList
   /* @todo: revisit me */
   uint8_t eventChannel;
   uint8_t priority;
+  uint8_t odtCount;
   XcpLightOdt_t * pOdt;
 
   struct XcpLightDaqList * pNext; /* pointer to next daq list */
@@ -237,7 +238,7 @@ typedef struct XcpLightInternals
   void * mta;
 
   /* DAQ */
-#ifdef XCPLIGHT_CFG_ENABLE_DAQ
+  #ifdef XCPLIGHT_CFG_ENABLE_DAQ
   XcpLightDaqProcessor_t daqProcessor;
   #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 

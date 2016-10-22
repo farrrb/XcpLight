@@ -9,7 +9,7 @@ enable_language(C)
 enable_testing()
 
 # compiler flags
-set(CMAKE_C_FLAGS "-O2 -Wall -m32")
+set(CMAKE_C_FLAGS "-O2 -Wall -m32 -Werror")
 set(CMAKE_CXX_FLAGS ${CMAKE_C_FLAGS})
 
 # add include include directories

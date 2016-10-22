@@ -63,7 +63,7 @@ void test_DaqSetup(void)
   TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:FREE_DAQ */
 
-cmdMsg.length = 4u;
+  cmdMsg.length = 4u;
   cmdMsg.payload[0] = XCP_CMD_ALLOC_DAQ;
   cmdMsg.payload[1] = 0u;
   /* alloc 256 daq lists */

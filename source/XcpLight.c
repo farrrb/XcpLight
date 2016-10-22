@@ -367,6 +367,15 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   }
   else
   {
+    int i;
+    XcpLightDaqList_t * pList = _XcpLightData.daqProcessor.pList;
+
+    for(i=1; i < daqCount; i++)
+    {
+      pList->pNext = _XcpLightData.daqProcessor.pList+i;
+      pList = pList->pNext;
+    }
+
     _XcpLightData.daqProcessor.daqCount += daqCount;
 
     pReplyMsg->length = 1u;
