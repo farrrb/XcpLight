@@ -98,7 +98,7 @@ void test_DaqSetup(void)
   cmdMsg.payload[0] = XCP_CMD_ALLOC_ODT;
   cmdMsg.payload[1] = 0u;
   cmdMsg.payload[2] = 1u; /* daq 1 */
-  cmdMsg.payload[3] = 0u; /* daq 0 */
+  cmdMsg.payload[3] = 0u; /* daq 1 */
   cmdMsg.payload[4] = 1u; /* cnt 1 */
   XcpLight_CommandProcessor(&cmdMsg);
   TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
@@ -108,7 +108,7 @@ void test_DaqSetup(void)
   cmdMsg.payload[0] = XCP_CMD_ALLOC_ODT;
   cmdMsg.payload[1] = 0u;
   cmdMsg.payload[2] = 2u; /* daq 2 */
-  cmdMsg.payload[3] = 0u; /* daq 0 */
+  cmdMsg.payload[3] = 0u; /* daq 2 */
   cmdMsg.payload[4] = 2u; /* cnt 2 */
   XcpLight_CommandProcessor(&cmdMsg);
   TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
@@ -118,7 +118,7 @@ void test_DaqSetup(void)
   cmdMsg.payload[0] = XCP_CMD_ALLOC_ODT;
   cmdMsg.payload[1] = 0u;
   cmdMsg.payload[2] = 2u; /* daq 2 */
-  cmdMsg.payload[3] = 0u; /* daq 0 */
+  cmdMsg.payload[3] = 0u; /* daq 2 */
   cmdMsg.payload[4] = 2u; /* cnt 2 */
   XcpLight_CommandProcessor(&cmdMsg);
   TEST_ASSERT_EQUAL_UINT8(   2u, replyMsg.length);
@@ -129,12 +129,24 @@ void test_DaqSetup(void)
   cmdMsg.payload[0] = XCP_CMD_ALLOC_ODT;
   cmdMsg.payload[1] = 0u;
   cmdMsg.payload[2] = 3u; /* daq 2 */
-  cmdMsg.payload[3] = 0u; /* daq 0 */
-  cmdMsg.payload[4] = 3u; /* cnt 2 */
+  cmdMsg.payload[3] = 0u; /* daq 2 */
+  cmdMsg.payload[4] = 3u; /* cnt 3 */
   XcpLight_CommandProcessor(&cmdMsg);
   TEST_ASSERT_EQUAL_UINT8(   2u, replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(0xFEu, replyMsg.payload[0]); /* Error:ALLOC_ODT */
   TEST_ASSERT_EQUAL_UINT8(0x22u, replyMsg.payload[1]); /* XCP_ERR_SEQUENCE */
+
+  /* ALLOC ODT ENTRY */
+  cmdMsg.length = 6u;
+  cmdMsg.payload[0] = XCP_CMD_ALLOC_ODT_ENTRY;
+  cmdMsg.payload[1] = 0u;
+  cmdMsg.payload[2] = 0u; /* daq 0 */
+  cmdMsg.payload[3] = 0u; /* daq 0 */
+  cmdMsg.payload[4] = 0u; /* odt 0 */
+  cmdMsg.payload[5] = 1u; /* cnt 1 */
+  XcpLight_CommandProcessor(&cmdMsg);
+  TEST_ASSERT_EQUAL_UINT8(   1u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:ALLOC_ODT_ENTRY */
 
 }
 

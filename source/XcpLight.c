@@ -278,7 +278,7 @@ XCP_STATIC_INLINE int _CmdGetDaqProcessorInfo(XcpLightMessage_t * pMsg, XcpLight
 //  pReplyMsg->payload[1] |= 0x08u; /* BIT_STIM_SUPPORTED::supported */
   pReplyMsg->payload[1] |= 0x10u; /* TIMESTAMP_SUPPORTED::supported */
 //  pReplyMsg->payload[1] |= 0x20u; /* PID_OFF_SUPPORTED::supported*/
-//  pReplyMsg->payload[1] |= 0x40u; /* OVERLOAD_MSB::Overload indication type */
+  pReplyMsg->payload[1] |= 0x40u; /* OVERLOAD_MSB::Overload indication type */
 //  pReplyMsg->payload[1] |= 0x80u; /* OVERLOAD_EVENT::Overload indication type */
 
   pReplyMsg->payload[2] = 0x00u; // @todo: MAX_DAQ
@@ -354,7 +354,7 @@ XCP_STATIC_INLINE int _CmdAllocDaq(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   daqCount  = (pMsg->payload[2] & 0xFFu);
   daqCount |= (pMsg->payload[3] & 0xFFu) << 8;
 
-  if(daqCount > 0x7Fu)
+  if(daqCount > 0x7Cu)
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
@@ -408,7 +408,7 @@ XCP_STATIC_INLINE int _CmdAllocOdt(XcpLightMessage_t * pMsg, XcpLightMessage_t *
   /* check if there is enough address space for odts */
   odtCount  = (pMsg->payload[4] & 0xFFu);
 
-  if( (_XcpLightData.daqProcessor.odtCount + odtCount) > 127u )
+  if( (_XcpLightData.daqProcessor.odtCount + odtCount) > 0x7Cu )
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
@@ -470,17 +470,17 @@ XCP_STATIC_INLINE int _CmdAllocOdtEntry(XcpLightMessage_t * pMsg, XcpLightMessag
   /* check if there is a valid odt */
   odtNo  = (pMsg->payload[4] & 0xFFu);
 
-  if( odtNo > 127u ) // @todo implement me!
+  if( _XcpLightData.daqProcessor.pList[daqListNo].odtCount < (odtNo + 1u) )
   {
     return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
 
   odtEntryCount = (pMsg->payload[5] & 0xFFu);
 
-  if( (_XcpLightData.daqProcessor.odtEntryCount + odtEntryCount) > 127u )
-  {
-    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
-  }
+//  if( (_XcpLightData.daqProcessor.odtEntryCount + odtEntryCount) > 0x7Cu )
+//  {
+//    return _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+//  }
 
   // @todo fixme
   // -> alloc some odt entries
