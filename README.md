@@ -8,20 +8,18 @@ This projects at developing a lightweight implementation of the "Universal Measu
 
 ## Features
 - Login works without seed & key
-- SHORT_UPLOAD
-- DOWNLOAD
+- SHORT_UPLOAD and UPLOAD
+- SHORT_DOWNLOAD and DOWNLOAD
 
 ## Limitations
 - Block transfer is not supported (UPLOAD, DOWNLOAD, PROGRAM)
 - The "ECU_STATES" (STATE_NUMBER) are not supported
 - The "RESUME" mode is not supported
-- The number of DAQ lists is limited to 127 (one byte with overflow) in order to keep DTO packets as small as possible 
-- The number of ODTs is limited as well to 127 (see above)
-- DAQ timestamp is fixed and exactly one byte (for now)
+- DAQ & STIM are note supported
 
 ## Todos
 - Provide basic self information about the driver configuration
-- Synchronous data readout via dynamic DAQ lists
+- Support dynamic DAQ lists
 
 ## Integration / API
 - t.b.d.
