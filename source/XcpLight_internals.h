@@ -10,7 +10,6 @@ extern "C"
 #endif
 
 #include "XcpLight_config.h"
-#include "XcpLightMem.h"
 
 /*****************************************************************************/
 /* macro constants                                                           */
@@ -215,6 +214,8 @@ typedef struct XcpLightDaqList
   struct XcpLightDaqList * pNext; /* pointer to next daq list */
 } XcpLightDaqList_t;
 
+#ifdef XCPLIGHT_CFG_ENABLE_DAQ
+
 /* daq processor */
 typedef struct XcpLightDaqProcessor
 {
@@ -226,6 +227,8 @@ typedef struct XcpLightDaqProcessor
   uint8_t odtCount;           /* no of odt */
   uint8_t odtEntryCount;      /* no of odt entries */
 } XcpLightDaqProcessor_t;
+
+#endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 /* internal data structure */
 typedef struct XcpLightInternals

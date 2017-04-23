@@ -2,7 +2,6 @@
 /* - Copyright (c) 2016 0xFAB - Fabian Zahn */
 
 #include "XcpLight.h"
-#include "XcpLightMem.h"
 #include "XcpLight_internals.h"
 
 /*
@@ -53,7 +52,6 @@ XcpLightInternals_t _XcpLightData = {0};
 /*****************************************************************************/
 /* local macro functions                                                     */
 /*****************************************************************************/
-#define Uint32FromUint8Ptr(ptr) (*((uint32_t *)(ptr)))
 
 /*****************************************************************************/
 /* local functions - prototypes                                              */
@@ -198,8 +196,12 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_
   {
     pReplyMsg->length = length + 1u;
     pReplyMsg->payload[0] = XCP_PID_RES;
-    tmpAddressExt  = (pMsg->payload[3] & 0xFFu);
-    tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
+    tmpAddressExt  = (pMsg->payload[3] & 0xFFu);  
+    
+    tmpAddress |= ((pMsg->payload[4] & 0xFFu) <<  0u);
+    tmpAddress |= ((pMsg->payload[5] & 0xFFu) <<  8u);
+    tmpAddress |= ((pMsg->payload[6] & 0xFFu) << 16u);
+    tmpAddress |= ((pMsg->payload[7] & 0xFFu) << 24u);
 
     _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
 
@@ -223,7 +225,11 @@ XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * p
   pReplyMsg->payload[1] = 0x00u;
 
   tmpAddressExt = (pMsg->payload[3] & 0xFFu);
-  tmpAddress = Uint32FromUint8Ptr(&(pMsg->payload[4]));
+
+  tmpAddress |= ((pMsg->payload[4] & 0xFFu) <<  0u);
+  tmpAddress |= ((pMsg->payload[5] & 0xFFu) <<  8u);
+  tmpAddress |= ((pMsg->payload[6] & 0xFFu) << 16u);
+  tmpAddress |= ((pMsg->payload[7] & 0xFFu) << 24u);
 
   _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
 
