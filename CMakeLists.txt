@@ -18,7 +18,8 @@ include_directories(externals/Unity/src)
 
 # add XcpLight
 include_directories(XcpLight PUBLIC)
-add_library(XcpLight STATIC source/XcpLight.c source/XcpLight_config.c source/XcpLightMem.c)
+add_library(XcpLight STATIC source/XcpLight.c)
+add_library(XcpLightConfig source/XcpLight_config.c)
 
 # add Unity
 add_subdirectory(externals)
@@ -28,7 +29,7 @@ include_directories(tests)
 
 macro (Add_XcpLight_Test NAME TIMEOUT)
     add_executable(${NAME} tests/${NAME}.c)
-    target_link_libraries(${NAME} XcpLight Unity)
+    target_link_libraries(${NAME} XcpLight XcpLightConfig Unity)
     add_test(${NAME} ${NAME})
     set_tests_properties(${NAME} PROPERTIES TIMEOUT ${TIMEOUT})
 endmacro (Add_XcpLight_Test)
@@ -38,5 +39,3 @@ Add_XcpLight_Test(BasicCommands     5)
 Add_XcpLight_Test(LoginProcedure    5)
 Add_XcpLight_Test(Timestamp         5)
 Add_XcpLight_Test(MemoryAccess      5)
-Add_XcpLight_Test(MemoryManagement  5)
-Add_XcpLight_Test(DataAquisition    5)
