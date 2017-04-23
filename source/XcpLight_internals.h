@@ -185,51 +185,6 @@ extern "C"
 /* struct and type definitions (struct, enum and typedef)                    */
 /*****************************************************************************/
 
-/* odt entry */
-typedef struct XcpLightOdtEntry
-{
-  /* @todo: revisit me */
-  struct XcpLightOdtEntry * pNext; /* pointer to next odt entry */
-} XcpLightOdtEntry_t;
-
-/* odt */
-typedef struct XcpLightOdt
-{
-  /* @todo: revisit me */
-  uint8_t odtEntryCount;
-  XcpLightOdtEntry_t * pEntry;
-
-  struct XcpLightOdt * pNext; /* pointer to next odt*/
-} XcpLightOdt_t;
-
-/* daq list */
-typedef struct XcpLightDaqList
-{
-  /* @todo: revisit me */
-  uint8_t eventChannel;
-  uint8_t priority;
-  uint8_t odtCount;
-  XcpLightOdt_t * pOdt;
-
-  struct XcpLightDaqList * pNext; /* pointer to next daq list */
-} XcpLightDaqList_t;
-
-#ifdef XCPLIGHT_CFG_ENABLE_DAQ
-
-/* daq processor */
-typedef struct XcpLightDaqProcessor
-{
-  XcpLightMemory_t mem; /* memory management struct for daq lists & samples */
-  uint8_t daqMemoryBuffer[XCPLIGHT_CFG_DAQ_MEMORY_SIZE]; /* raw mem -> do not use this directly! */
-
-  XcpLightDaqList_t * pList;  /* pointer to first daq list */
-  uint8_t daqCount;           /* no of daq lists */
-  uint8_t odtCount;           /* no of odt */
-  uint8_t odtEntryCount;      /* no of odt entries */
-} XcpLightDaqProcessor_t;
-
-#endif /* XCPLIGHT_CFG_ENABLE_DAQ */
-
 /* internal data structure */
 typedef struct XcpLightInternals
 {
@@ -242,11 +197,6 @@ typedef struct XcpLightInternals
 #endif
   XcpLightMessage_t ctoReplyMsg;
   void * mta;
-
-  /* DAQ */
-  #ifdef XCPLIGHT_CFG_ENABLE_DAQ
-  XcpLightDaqProcessor_t daqProcessor;
-  #endif /* XCPLIGHT_CFG_ENABLE_DAQ */
 
 } XcpLightInternals_t;
 
