@@ -18,8 +18,12 @@ include_directories(externals/Unity/src)
 
 # add XcpLight
 include_directories(XcpLight PUBLIC)
-add_library(XcpLight STATIC source/XcpLight.c)
-add_library(XcpLightConfig source/XcpLight_config.c)
+
+add_library(
+	XcpLight STATIC 
+	source/XcpLight.c
+	source/XcpLight_config.c
+	)
 
 # add Unity
 add_subdirectory(externals)
@@ -29,7 +33,7 @@ include_directories(tests)
 
 macro (Add_XcpLight_Test NAME TIMEOUT)
     add_executable(${NAME} tests/${NAME}.c)
-    target_link_libraries(${NAME} XcpLight XcpLightConfig Unity)
+    target_link_libraries(${NAME} XcpLight Unity)
     add_test(${NAME} ${NAME})
     set_tests_properties(${NAME} PROPERTIES TIMEOUT ${TIMEOUT})
 endmacro (Add_XcpLight_Test)

@@ -36,28 +36,28 @@ void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension)
   return (void *)(address);
 }
 
-extern void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * pMem)
+void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * buffer)
 {
   if(addr)
   {
     while(length)
     {
-      *pMem = (*addr);
-      pMem++;
+      *buffer = (*addr);
+      buffer++;
       addr++;
       length--;
     }
   }
 }
 
-extern void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * pMem)
+void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * data)
 {
   if(addr)
   {
     while(length)
     {
-      *addr = (*pMem);
-      pMem++;
+      *addr = (*data);
+      data++;
       addr++;
       length--;
     }

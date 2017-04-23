@@ -47,8 +47,8 @@ int  XcpLight_Event(uint8_t eventNo);
 /* interface to transport layer */
 extern void XcpLight_SendMessage(XcpLightMessage_t * pMsg);
 extern void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension);
-extern void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * pMem);
-extern void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * pMem);
+extern void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * buffer);
+extern void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * data);
 
 #ifdef __cplusplus
 }
