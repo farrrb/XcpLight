@@ -147,8 +147,8 @@ int main(void)
   RUN_TEST(test_CmdSynch);
   RUN_TEST(test_CmdGetCommModeInfo);
   RUN_TEST(test_CmdGetStatus);
-  RUN_TEST(test_CmdGetDaqProcessorInfo);
-  RUN_TEST(test_CmdGetDaqResolutionInfo);
+//  RUN_TEST(test_CmdGetDaqProcessorInfo);
+//  RUN_TEST(test_CmdGetDaqResolutionInfo);
 
   return UNITY_END();
 }

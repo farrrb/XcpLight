@@ -107,6 +107,6 @@ int main(void)
   RUN_TEST(test_TimestampAfterInit);
   RUN_TEST(test_TimestampIncrement);
   RUN_TEST(test_TimestampWrapAround);
-  RUN_TEST(test_CmdGetDaqClock);
+  //RUN_TEST(test_CmdGetDaqClock);
   return UNITY_END();
 }
