@@ -315,16 +315,16 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
           sendFlag = _CmdDisconnect(pMsg, pReplyMsg);
           break;
 
+        case XCP_CMD_GET_STATUS:
+          sendFlag = _CmdGetStatus(pMsg, pReplyMsg);
+          break;
+
         case XCP_CMD_SYNCH:
           sendFlag = _CmdSynch(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_GET_COMM_MODE_INFO:
           sendFlag = _CmdGetCommModeInfo(pMsg, pReplyMsg);
-          break;
-
-        case XCP_CMD_GET_STATUS:
-          sendFlag = _CmdGetStatus(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_SET_MTA:
