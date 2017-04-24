@@ -17,10 +17,10 @@ extern "C"
 /*****************************************************************************/
 
 /** PACKET IDENTIFIER **/
-#define XCP_PID_RES                     (0xFFu) ///< response
-#define XCP_PID_ERR                     (0xFEu) ///< error
-#define XCP_PID_EVT                     (0xFDu) ///< event
-#define XCP_PID_SRV                     (0xFCu) ///< service
+#define XCP_PID_RES                     (0xFFu)
+#define XCP_PID_ERR                     (0xFEu)
+#define XCP_PID_EVT                     (0xFDu)
+#define XCP_PID_SRV                     (0xFCu)
 /* note PID 0xFB ... 0x00 absolute or relative ODT number for DAQ */
 
 /** RESOURCE CODES **/
@@ -32,7 +32,7 @@ extern "C"
 /** SESSION STATUS **/
 #define XCP_SES_RESET_SESSION       (0x00u)
 #define XCP_SES_STORE_CAL_REQ       (0x01u)
-#define XCP_SES_CONNECTED           (0x02u) /* Reserve 1: used for connected flag */
+#define XCP_SES_CONNECTED           (0x02u)  /* Reserve 1: used for connected flag */
 #define XCP_SES_STORE_DAQ_REQ       (0x04u)
 #define XCP_SES_CLEAR_DAQ_REQ       (0x08u)
 #define XCP_SES_RESERVE2            (0x10u)
