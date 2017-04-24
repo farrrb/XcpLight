@@ -203,6 +203,7 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
   uint8_t mode = pMsg->payload[2] & 0xFFu;
   uint8_t seedBytes;
   int i;
+  int transferSeedMessage = 0;
 
   if (mode == 0u) // first part
   {
@@ -212,28 +213,7 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
     {
       XcpLight_GetSeed(_XcpLightData.unlockResource , _XcpLightData.seed);
       _XcpLightData.remainingSeedBytes = XCPLIGHT_CFG_SEED_LENGTH;
-
-      // send first XCPLIGHT_CFG_XTO_LENGTH-2 bytes
-      if (_XcpLightData.remainingSeedBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
-      {
-        seedBytes = (XCPLIGHT_CFG_XTO_LENGTH - 2);
-        _XcpLightData.remainingSeedBytes -= (XCPLIGHT_CFG_XTO_LENGTH - 2);
-      }
-      else
-      {
-        seedBytes = _XcpLightData.remainingSeedBytes;
-        _XcpLightData.remainingSeedBytes = 0u;
-      }
-
-      pReplyMsg->length = 2 + seedBytes;
-      pReplyMsg->payload[0] = XCP_PID_RES;
-      pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes;
-      
-      for (i = 0; i < seedBytes; i++)
-      {
-        pReplyMsg->payload[1+i] = _XcpLightData.seed[i];
-      }
-      
+      transferSeedMessage = 1; // transmit first bytes of seed
     }
     else // resource is unprotected
     {
@@ -250,26 +230,32 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
     }
     else
     {
-      // send next XCPLIGHT_CFG_XTO_LENGTH-2 bytes
-      if (_XcpLightData.remainingSeedBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
-      {
-        seedBytes = (XCPLIGHT_CFG_XTO_LENGTH - 2);
-        _XcpLightData.remainingSeedBytes -= (XCPLIGHT_CFG_XTO_LENGTH - 2);
-      }
-      else
-      {
-        seedBytes = _XcpLightData.remainingSeedBytes;
-        _XcpLightData.remainingSeedBytes = 0u;
-      }
+      transferSeedMessage = 1; // transmit consecutive bytes of seed
+    }
+  }
 
-      pReplyMsg->length = 2 + seedBytes;
-      pReplyMsg->payload[0] = XCP_PID_RES;
-      pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes;
-      
-      for (i = 0; i < seedBytes; i++)
-      {
-        pReplyMsg->payload[1+i] = _XcpLightData.seed[i];
-      }
+  // prepare message with seed data
+  if (transferSeedMessage)
+  {
+    // send XCPLIGHT_CFG_XTO_LENGTH-2 bytes
+    if (_XcpLightData.remainingSeedBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
+    {
+      seedBytes = (XCPLIGHT_CFG_XTO_LENGTH - 2);
+      _XcpLightData.remainingSeedBytes -= (XCPLIGHT_CFG_XTO_LENGTH - 2);
+    }
+    else
+    {
+      seedBytes = _XcpLightData.remainingSeedBytes;
+      _XcpLightData.remainingSeedBytes = 0u;
+    }
+
+    pReplyMsg->length = 2 + seedBytes;
+    pReplyMsg->payload[0] = XCP_PID_RES;
+    pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes;
+
+    for (i = 0; i < seedBytes; i++)
+    {
+      pReplyMsg->payload[1+i] = _XcpLightData.seed[i];
     }
   }
   
