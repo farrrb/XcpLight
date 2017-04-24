@@ -64,7 +64,7 @@ void test_Upload(void)
   TEST_ASSERT_EQUAL_UINT32(0xDEADBEEFu, uploadVariable);
 
   SET_SESSION_CONNECTED();
- SET_UNLOCK_ALL_RESOURCES();
+  SET_UNLOCK_ALL_RESOURCES();
 
   cmdMsg.length = 8u;
   cmdMsg.payload[0] = XCP_CMD_SET_MTA;

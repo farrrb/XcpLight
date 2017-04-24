@@ -200,15 +200,16 @@ XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t *pMsg, XcpLightMessa
 #ifdef XCPLIGHT_CFG_SEED_AND_KEY
 XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  uint8_t mode = pMsg->payload[2] & 0xFFu;
+  uint8_t mode;
   uint8_t seedBytes;
   int i;
   int transferSeedMessage = 0;
 
+  mode = (pMsg->payload[1] & 0xFFu);
   if (mode == 0u) // first part
   {
     _XcpLightData.seedIndex = 0u;
-    _XcpLightData.unlockResource = pMsg->payload[1] & 0xFFu;
+    _XcpLightData.unlockResource = pMsg->payload[2] & 0xFFu;
 
     if (_XcpLightData.protectionStatus & _XcpLightData.unlockResource) // resource is protected
     {
@@ -239,6 +240,18 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
   // prepare message with seed data
   if (transferSeedMessage)
   {
+
+    // assemble payload
+    pReplyMsg->payload[0] = XCP_PID_RES;
+    if (mode == 0u)
+    {
+      pReplyMsg->payload[1] = XCPLIGHT_CFG_SEED_LENGTH;
+    }
+    else
+    {
+      pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes & 0xFFu;
+    }
+    
     // send XCPLIGHT_CFG_XTO_LENGTH-2 bytes
     if (_XcpLightData.remainingSeedBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
     {
@@ -254,10 +267,6 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
       seedBytes = _XcpLightData.remainingSeedBytes;
       _XcpLightData.remainingSeedBytes = 0u;
     }
-
-    // assemble payload
-    pReplyMsg->payload[0] = XCP_PID_RES;
-    pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes & 0xFFu;
 
     for (i = 0; i < seedBytes; i++)
     {
