@@ -89,14 +89,24 @@ void test_GetSeed(void)
   TEST_ASSERT_EQUAL_UINT8(6, replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(XCP_PID_RES, replyMsg.payload[0]);
 
-  TEST_ASSERT_EQUAL_UINT8( 4, replyMsg.payload[1]);
+  TEST_ASSERT_EQUAL_UINT8(4, replyMsg.payload[1]);
   TEST_ASSERT_EQUAL_UINT8(6 + XCPLIGHT_RES_CALPAG, replyMsg.payload[2]);
   TEST_ASSERT_EQUAL_UINT8(7 + XCPLIGHT_RES_CALPAG, replyMsg.payload[3]);
   TEST_ASSERT_EQUAL_UINT8(8 + XCPLIGHT_RES_CALPAG, replyMsg.payload[4]);
   TEST_ASSERT_EQUAL_UINT8(9 + XCPLIGHT_RES_CALPAG, replyMsg.payload[5]);
 
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  cmdMsg.length = 3u;
+  cmdMsg.payload[0] = XCP_CMD_GET_SEED;
+  cmdMsg.payload[1] = 1;
+  cmdMsg.payload[2] = 0xFF;
 
   XcpLight_CommandProcessor(&cmdMsg);
+  TEST_ASSERT_EQUAL_UINT8(2, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(XCP_PID_ERR,      replyMsg.payload[0]);
+  TEST_ASSERT_EQUAL_UINT8(XCP_ERR_SEQUENCE, replyMsg.payload[1]);
+
 }
 
 int main(void)
