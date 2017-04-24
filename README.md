@@ -9,7 +9,7 @@ This projects at developing a lightweight implementation of the "Universal Measu
 ## Features
 - Login works without seed & key (CONNECT & DISCONNECT)
 - Some Basic Information about the driver (CMD_GET_COMM_MODE_INFO & XCP_CMD_GET_STATUS)
-- Readout data via polling (SHORT_UPLOAD)
+- Readout data via polling (UPLOAD & SHORT_UPLOAD)
 - Write data (DOWNLOAD)
 
 ## Limitations
@@ -19,7 +19,7 @@ This projects at developing a lightweight implementation of the "Universal Measu
 - DAQ & STIM are note supported
 
 ## Todos
-- Implement UPLOAD & SHORT_DOWNLOAD
+- Implement SHORT_DOWNLOAD
 - Provide basic self information about the driver configuration
 - Support dynamic DAQ lists
 
