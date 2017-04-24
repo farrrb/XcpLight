@@ -106,6 +106,10 @@ void test_GetSeed(void)
   TEST_ASSERT_EQUAL_UINT8(2, replyMsg.length);
   TEST_ASSERT_EQUAL_UINT8(XCP_PID_ERR,      replyMsg.payload[0]);
   TEST_ASSERT_EQUAL_UINT8(XCP_ERR_SEQUENCE, replyMsg.payload[1]);
+}
+
+void test_Unlock(void)
+{
 
 }
 
@@ -114,5 +118,6 @@ int main(void)
   UNITY_BEGIN();
   RUN_TEST(test_LoginProcedureDummy);
   RUN_TEST(test_GetSeed);
+  RUN_TEST(test_Unlock);
   return UNITY_END();
 }
