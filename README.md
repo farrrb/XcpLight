@@ -24,9 +24,9 @@ This projects at developing a lightweight implementation of the "Universal Measu
 - Support dynamic DAQ lists
 
 ## Integration / API
-1. XcpLight.h and XcpLight.c to your project
-2. Write your custom implementation for XcpLight_config.h/.c 
-   You have to implement to following functions:
+1. Add all the files from the 'source' directory to your project
+2. Write your custom implementation for your platform in XcpLight_config.h/.c 
+   You have to implement/rewrite the following functions:
 
 ```C
   void XcpLight_SendMessage(XcpLightMessage_t * pMsg)
