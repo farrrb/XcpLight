@@ -8,9 +8,14 @@
 #include <stdint.h>
 
 /** CONFIG **/
+/* The maximum length for cto and dto messages */
 #define XCPLIGHT_CFG_XTO_LENGTH 8
 
+/* Determine the systems byte order */
 #define XCPLIGHT_CFG_LITTLE_ENDIAN 1
+
+/* How many bytes are addressed by one address? Valid values are 1, 2, 4*/
+#define XCPLIGHT_CFG_ADDRESS_GRANULARITY 1 
 
 //#define XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
 

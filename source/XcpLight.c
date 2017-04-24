@@ -109,7 +109,20 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t
   pReplyMsg->payload[1] |= XCP_RES_PGM;
 #endif
 
-  pReplyMsg->payload[2] = 0x80u; // @todo COMM_MODE_BASIC
+  /* COMM_MODE_BASIC */
+  pReplyMsg->payload[2]  = 0x80u; // set optional bit?
+
+#ifndef XCPLIGHT_CFG_LITTLE_ENDIAN
+  pReplyMsg->payload[2] |= 0x01u; // big endian
+#endif
+
+  pReplyMsg->payload[2] |= (((XCPLIGHT_CFG_ADDRESS_GRANULARITY >> 1u) & 0x03u) << 1u);
+
+#ifdef XCPLIGHT_CFG_BLOCK_MODE
+  pReplyMsg->payload[2] |= (1 << 6u);
+#endif 
+
+
   pReplyMsg->payload[3] = XCPLIGHT_CFG_XTO_LENGTH;
   pReplyMsg->payload[4] = XCPLIGHT_CFG_XTO_LENGTH;
   pReplyMsg->payload[5] = 0x00u; // reserved
