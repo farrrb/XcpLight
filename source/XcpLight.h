@@ -1,8 +1,8 @@
 /* MIT License see LICENSE file             */
 /* - Copyright (c) 2016 0xFAB - Fabian Zahn */
 
-#ifndef __XCPLIGHT_H
-#define __XCPLIGHT_H
+#ifndef SOURCE_XCPLIGHT_H_
+#define SOURCE_XCPLIGHT_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -22,8 +22,8 @@ extern "C"
 /* command transfer object */
 typedef struct
 {
-  uint8_t payload[XCPLIGHT_CFG_XTO_LENGTH];
-  uint8_t length;
+  uint32_t length;
+  uint8_t  payload[XCPLIGHT_CFG_XTO_LENGTH];
 } XcpLightMessage_t;
 
 /*****************************************************************************/
@@ -54,4 +54,4 @@ extern void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * da
 }
 #endif
 
-#endif // __XCPLIGHT_H
+#endif // SOURCE_XCPLIGHT_H_

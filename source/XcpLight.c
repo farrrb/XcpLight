@@ -205,7 +205,7 @@ XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * p
 {
   uint8_t  length = (pMsg->payload[1] & 0xFFu);
 
-  if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+  if (length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
   {
     pReplyMsg->length = length + 1u;
     pReplyMsg->payload[0] = XCP_PID_RES;
@@ -226,7 +226,7 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_
   uint8_t  tmpAddressExt = 0;
   uint8_t  length = (pMsg->payload[1] & 0xFFu);
 
-  if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+  if (length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
   {
     pReplyMsg->length = length + 1u;
     pReplyMsg->payload[0] = XCP_PID_RES;
@@ -249,7 +249,7 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_
 XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
   uint8_t length = (pMsg->payload[1] & 0xFFu);
-  if(length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+  if (length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
   {
     XcpLight_WriteToAddress((uint8_t *)_XcpLightData.mta, length, &(pMsg->payload[2]));
 
@@ -296,7 +296,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 
   _XcpLightData.currentCommand = (pMsg->payload[0] & 0xFFu);
 
-  if(_XcpLightData.currentCommand == XCP_CMD_CONNECT)
+  if (_XcpLightData.currentCommand == XCP_CMD_CONNECT)
   {
     /* STD : standard commands :: connect begin */
     sendFlag = _CmdConnect(pMsg, pReplyMsg);
@@ -304,7 +304,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
   }
   else
   {
-    if(_XcpLightData.sessionStatus & XCP_SES_CONNECTED)
+    if (_XcpLightData.sessionStatus & XCP_SES_CONNECTED)
     {
       /* in connected state process all other commands*/
       switch(_XcpLightData.currentCommand)
@@ -374,7 +374,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
   }
 
   /* send reply message */
-  if(sendFlag)
+  if (sendFlag)
   {
     XcpLight_SendMessage(pReplyMsg);
   }
@@ -382,7 +382,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
 
 int XcpLight_Event(uint8_t eventNo)
 {
-  if(_XcpLightData.sessionStatus & XCP_SES_DAQ_RUNNING)
+  if (_XcpLightData.sessionStatus & XCP_SES_DAQ_RUNNING)
   {
     return 0;
   }

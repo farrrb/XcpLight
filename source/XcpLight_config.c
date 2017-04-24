@@ -15,7 +15,7 @@
 /*****************************************************************************/
 /* external data                                                             */
 /*****************************************************************************/
-XcpLightMessage_t replyMsg = {{0}};
+XcpLightMessage_t replyMsg = {0,{0}};
 
 /*****************************************************************************/
 /* macro functions                                                           */
@@ -38,9 +38,9 @@ void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension)
 
 void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * buffer)
 {
-  if(addr)
+  if (addr)
   {
-    while(length)
+    while (length)
     {
       *buffer = (*addr);
       buffer++;
@@ -52,9 +52,9 @@ void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * buffer)
 
 void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * data)
 {
-  if(addr)
+  if (addr)
   {
-    while(length)
+    while (length)
     {
       *addr = (*data);
       data++;

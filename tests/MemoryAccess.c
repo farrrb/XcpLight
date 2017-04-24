@@ -11,7 +11,7 @@
 extern XcpLightMessage_t replyMsg;
 extern XcpLightInternals_t _XcpLightData;
 
-XcpLightMessage_t cmdMsg = {{0}};
+XcpLightMessage_t cmdMsg = {0, {0}};
 
 /* test variables for mem read & write */
 uint32_t uploadVariable       = 0xDEADBEEFu;
@@ -23,7 +23,7 @@ uint32_t downloadVariable     = 0xDEADBEEFu;
 void clearCmdMessage(void)
 {
   int i;
-  for(i=0; i<XCPLIGHT_CFG_XTO_LENGTH; i++)
+  for (i=0; i < XCPLIGHT_CFG_XTO_LENGTH; i++)
   {
     cmdMsg.payload[i] = 0u;
   }
@@ -33,7 +33,7 @@ void clearCmdMessage(void)
 void clearReplyMessage(void)
 {
   int i;
-  for(i=0; i<XCPLIGHT_CFG_XTO_LENGTH; i++)
+  for (i=0; i < XCPLIGHT_CFG_XTO_LENGTH; i++)
   {
     replyMsg.payload[i] = 0u;
   }

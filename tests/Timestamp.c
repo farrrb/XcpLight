@@ -11,14 +11,14 @@
 extern XcpLightMessage_t replyMsg;
 extern XcpLightInternals_t _XcpLightData;
 
-XcpLightMessage_t cmdMsg = {{0}};
+XcpLightMessage_t cmdMsg = {0, {0}};
 
 /* santa's little helper functions */
 
 void clearCmdMessage(void)
 {
   int i;
-  for(i=0; i<XCPLIGHT_CFG_XTO_LENGTH; i++)
+  for (i=0; i < XCPLIGHT_CFG_XTO_LENGTH; i++)
   {
     cmdMsg.payload[i] = 0u;
   }
@@ -28,7 +28,7 @@ void clearCmdMessage(void)
 void clearReplyMessage(void)
 {
   int i;
-  for(i=0; i<XCPLIGHT_CFG_XTO_LENGTH; i++)
+  for (i=0; i < XCPLIGHT_CFG_XTO_LENGTH; i++)
   {
     replyMsg.payload[i] = 0u;
   }
