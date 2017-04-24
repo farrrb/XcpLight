@@ -11,6 +11,7 @@ This projects at developing a lightweight implementation of the "Universal Measu
 - Some Basic Information about the driver (CMD_GET_COMM_MODE_INFO & XCP_CMD_GET_STATUS)
 - Readout data via polling (UPLOAD & SHORT_UPLOAD)
 - Write data (DOWNLOAD)
+- User specified command via XCP protocol layer (USER_CMD)
 
 ## Limitations
 - Block transfer is not supported (UPLOAD, DOWNLOAD, PROGRAM)
@@ -29,7 +30,7 @@ This projects at developing a lightweight implementation of the "Universal Measu
    You have to implement/rewrite the following functions:
 
 ```C
-  void XcpLight_SendMessage(XcpLightMessage_t * pMsg)
+  void XcpLight_SendMessage(XcpLightMessage_t *pMsg)
   {
     // send a message via your transport layer
   }
@@ -39,14 +40,14 @@ This projects at developing a lightweight implementation of the "Universal Measu
     // get a pointer from 'address' and the 'address_extension'
   }
 
-  void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * buffer)
+  void XcpLight_ReadFromAddress(uint8_t *source, uint8_t length, uint8_t *buffer)
   {
-    // read from 'address 'length' bytes into 'buffer'
+    // read from 'source 'length' bytes into 'buffer'
   }
 
-  void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * data)
+  void XcpLight_WriteToAddress(uint8_t *dest, uint8_t length, uint8_t *data)
   {
-    // write the content of 'data' to 'address' with 'length' bytes
+    // write the content of 'data' to 'dest' with 'length' bytes
   }
 ```
 
@@ -68,7 +69,7 @@ void your_transport_layer_processor(void)
 ```C 
 void XcpLight_Init(void);                                 // init the xcp command processor - obviously called once at system startup
 void XcpLight_UpdateTimestampCounter(void);               // update the timestamp counter - call this every 1 ms
-void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg); // the command processor - as mentioned above
+void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg); // the command processor - as mentioned above
 int  XcpLight_Event(uint8_t eventNo);                     // the DAQ events (not supported yet) - you don't have to call that
 ```
 

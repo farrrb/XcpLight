@@ -50,9 +50,9 @@ extern void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension);
 extern void XcpLight_ReadFromAddress(uint8_t *source, uint8_t length, uint8_t *buffer);
 extern void XcpLight_WriteToAddress(uint8_t *dest, uint8_t length, uint8_t *data);
 
-#ifdef XCP_CFG_USER_CMD
-extern void XcpLight_ProcessUserCommand(XcpLightMessage_t *pMsg);
-#endif // XCP_CFG_USER_CMD
+#ifdef XCPLIGHT_CFG_USER_CMD
+extern int XcpLight_ProcessUserCommand(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+#endif // XCPLIGHT_CFG_USER_CMD
 
 #ifdef __cplusplus
 }

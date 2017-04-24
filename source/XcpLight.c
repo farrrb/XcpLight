@@ -53,9 +53,9 @@ XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t *pMsg, XcpLightMessa
 XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 
-#ifdef XCP_CFG_USER_CMD
+#ifdef XCPLIGHT_CFG_USER_CMD
 XCP_STATIC_INLINE int _CmdUserCmd(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
-#endif // XCP_CFG_USER_CMD
+#endif // XCPLIGHT_CFG_USER_CMD
 
 XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
@@ -201,13 +201,13 @@ XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pRe
 }
 
 
-#ifdef XCP_CFG_USER_CMD
+#ifdef XCPLIGHT_CFG_USER_CMD
 XCP_STATIC_INLINE int _CmdUserCmd(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  return MSG_SEND;
+  return XcpLight_ProcessUserCommand(pMsg, pReplyMsg);
 }
 
-#endif // XCP_CFG_USER_CMD
+#endif // XCPLIGHT_CFG_USER_CMD
 
 XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
@@ -351,6 +351,20 @@ void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg)
         case XCP_CMD_GET_COMM_MODE_INFO:
           sendFlag = _CmdGetCommModeInfo(pMsg, pReplyMsg);
           break;
+
+        case XCP_CMD_GET_SEED:
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+          break;
+
+        case XCP_CMD_UNLOCK:
+          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+          break;
+
+#ifdef XCPLIGHT_CFG_USER_CMD
+        case XCP_CMD_USER_CMD:
+          sendFlag = _CmdUserCmd(pMsg, pReplyMsg);
+          break;
+#endif // XCPLIGHT_CFG_USER_CMD
 
         case XCP_CMD_SET_MTA:
           sendFlag = _CmdSetMta(pMsg, pReplyMsg);

@@ -138,6 +138,18 @@ void test_CmdGetDaqResolutionInfo(void)
   TEST_ASSERT_EQUAL_UINT8(0xFF, replyMsg.payload[0]); /* Ok:GET_DAQ_DAQ_RESOLUTION_INFO */
 }
 
+void test_CmdUserCmd(void)
+{
+  SET_SESSION_CONNECTED();
+  cmdMsg.length = 1u;
+  cmdMsg.payload[0] = XCP_CMD_USER_CMD;
+
+  XcpLight_CommandProcessor(&cmdMsg);
+
+  TEST_ASSERT_EQUAL_UINT8(  1u, replyMsg.length);
+  TEST_ASSERT_EQUAL_UINT8(0x1A, replyMsg.payload[0]);
+}
+
 int main(void)
 {
   UNITY_BEGIN();
@@ -147,6 +159,7 @@ int main(void)
   RUN_TEST(test_CmdSynch);
   RUN_TEST(test_CmdGetCommModeInfo);
   RUN_TEST(test_CmdGetStatus);
+  RUN_TEST(test_CmdUserCmd);
 //  RUN_TEST(test_CmdGetDaqProcessorInfo);
 //  RUN_TEST(test_CmdGetDaqResolutionInfo);
 

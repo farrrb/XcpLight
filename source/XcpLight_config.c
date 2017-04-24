@@ -64,9 +64,12 @@ void XcpLight_WriteToAddress(uint8_t *dest, uint8_t length, uint8_t * data)
   }
 }
 
-#ifdef XCP_CFG_USER_CMD
-extern void XcpLight_ProcessUserCommand(XcpLightMessage_t *pMsg)
+#ifdef XCPLIGHT_CFG_USER_CMD
+extern int XcpLight_ProcessUserCommand(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  return;
+  // build response message and ...
+  pReplyMsg->length   = 1u;
+  pReplyMsg->payload[0] = 0x1Au; 
+  return 1; // ... send msg
 }
-#endif // XCP_CFG_USER_CMD
+#endif // XCPLIGHT_CFG_USER_CMD
