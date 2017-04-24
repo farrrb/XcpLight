@@ -91,10 +91,10 @@ extern int XcpLight_UnlockResource(uint8_t resource, uint8_t *key)
 {
   if (!resource)
   {
-    return XCP_RET_UNLOCK_FAILED;
+    return XCPLIGHT_RET_UNLOCK_FAILED;
   }
 
-  return XCP_RET_UNLOCK_SUCCESS;
+  return XCPLIGHT_RET_UNLOCK_SUCCESS;
 }
 
 #endif // XCPLIGHT_CFG_SEED_AND_KEY

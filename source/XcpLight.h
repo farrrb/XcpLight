@@ -15,9 +15,16 @@ extern "C"
 /* macro constants                                                           */
 /*****************************************************************************/
 
+/** RESOURCE CODES **/
+#define XCPLIGHT_RES_CALPAG              (0x01u)
+#define XCPLIGHT_RES_DAQ                 (0x04u)
+#define XCPLIGHT_RES_STIM                (0x08u)
+#define XCPLIGHT_RES_PGM                 (0x10u)
+
+/** RETURN CODES **/
 #ifdef XCPLIGHT_CFG_SEED_AND_KEY
-  #define XCP_RET_UNLOCK_SUCCESS 1
-  #define XCP_RET_UNLOCK_FAILED  0
+  #define XCPLIGHT_RET_UNLOCK_SUCCESS 1
+  #define XCPLIGHT_RET_UNLOCK_FAILED  0
 #endif // XCPLIGHT_CFG_SEED_AND_KEY
 
 /*****************************************************************************/

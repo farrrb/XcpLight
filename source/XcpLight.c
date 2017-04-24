@@ -268,7 +268,15 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
 
 XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+  if ((pMsg->payload[1] & 0xFFu) > XCPLIGHT_CFG_KEY_LENGTH)
+  {
+    _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+  }
+  else
+  {
+    _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+  } 
+  return MSG_SEND;
 }
 #endif // XCPLIGHT_CFG_SEED_AND_KEY
 
