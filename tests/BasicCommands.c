@@ -65,6 +65,7 @@ void test_CmdConnect(void)
 void test_CmdDisconnect(void)
 {
   SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
   cmdMsg.length     = 1u;
   cmdMsg.payload[0] = XCP_CMD_DISCONNECT; /* DISCONNECT */
 
@@ -77,6 +78,7 @@ void test_CmdDisconnect(void)
 void test_CmdSynch(void)
 {
   SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
   cmdMsg.length = 1u;
   cmdMsg.payload[0] = XCP_CMD_SYNCH;
 
@@ -90,6 +92,7 @@ void test_CmdSynch(void)
 void test_CmdGetCommModeInfo(void)
 {
   SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
   cmdMsg.length = 1u;
   cmdMsg.payload[0] = XCP_CMD_GET_COMM_MODE_INFO;
 
@@ -104,6 +107,7 @@ void test_CmdGetCommModeInfo(void)
 void test_CmdGetStatus(void)
 {
   SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
   cmdMsg.length = 1u;
   cmdMsg.payload[0] = XCP_CMD_GET_STATUS;
 
@@ -117,6 +121,7 @@ void test_CmdGetStatus(void)
 void test_CmdGetDaqProcessorInfo(void)
 {
   SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
   cmdMsg.length = 1u;
   cmdMsg.payload[0] = XCP_CMD_GET_DAQ_PROCESSOR_INFO;
 
@@ -129,6 +134,7 @@ void test_CmdGetDaqProcessorInfo(void)
 void test_CmdGetDaqResolutionInfo(void)
 {
   SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
   cmdMsg.length = 1u;
   cmdMsg.payload[0] = XCP_CMD_GET_DAQ_RESOLUTION_INFO;
 
@@ -141,6 +147,7 @@ void test_CmdGetDaqResolutionInfo(void)
 void test_CmdUserCmd(void)
 {
   SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
   cmdMsg.length = 1u;
   cmdMsg.payload[0] = XCP_CMD_USER_CMD;
 

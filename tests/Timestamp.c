@@ -81,7 +81,9 @@ void test_CmdGetDaqClock(void)
 {
   XcpLight_Init();
 
-  SET_SESSION_CONNECTED(); /* cheat here to get an active session! */
+  SET_SESSION_CONNECTED();
+  SET_UNLOCK_ALL_RESOURCES();
+  
   _XcpLightData.timestampCounter = 0xDEADBEEFu;
 
   cmdMsg.length     = 1u;

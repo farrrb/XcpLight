@@ -283,17 +283,26 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t
 #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
 XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  uint8_t length = (pMsg->payload[1] & 0xFFu);
-  if (length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+#ifdef XCPLIGHT_CFG_SEED_AND_KEY
+  if(_XcpLightData.protectionStatus & XCP_PRT_CAL_PAG)
   {
-    XcpLight_WriteToAddress((uint8_t *)_XcpLightData.mta, length, &(pMsg->payload[2]));
-
-    pReplyMsg->length = 1u;
-    pReplyMsg->payload[0] = XCP_PID_RES;
+    _BuildErrorMessage(pReplyMsg, XCP_ERR_ACCESS_LOCKED);
   }
   else
+#endif // XCPLIGHT_CFG_SEED_AND_KEY
   {
-    _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+    uint8_t length = (pMsg->payload[1] & 0xFFu);
+    if (length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
+    {
+      XcpLight_WriteToAddress((uint8_t *)_XcpLightData.mta, length, &(pMsg->payload[2]));
+
+      pReplyMsg->length = 1u;
+      pReplyMsg->payload[0] = XCP_PID_RES;
+    }
+    else
+    {
+      _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
+    }   
   }
 
   return MSG_SEND;
@@ -407,13 +416,17 @@ void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg)
         /* PAG: page switching commands -> end */
 #endif // XCPLIGHT_CFG_ENABLE_CALPAG
 
+#ifdef XCPLIGHT_CFG_ENABLE_DAQ
         /* DAQ: data aquisition commands -> begin */
         /* @note: not supported yet */
         /* DAQ: data aquisition commands -> end */
+#endif // XCPLIGHT_CFG_ENABLE_DAQ
 
+#ifdef XCPLIGHT_CFG_ENABLE_PGM
         /* PGM: programming commands -> begin */
         /* @note: not supported yet */
         /* PGM: programming commands -> end */
+#endif // XCPLIGHT_CFG_ENABLE_PGM
 
         /* Whenever a command is unknown -> build and send an error message */
         default:
