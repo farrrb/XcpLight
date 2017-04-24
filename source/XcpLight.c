@@ -4,21 +4,6 @@
 #include "XcpLight.h"
 #include "XcpLight_internals.h"
 
-/*
--------------------------------------------------------------------------------
-  Limitations:
-    1. Block transfer is not supported (UPLOAD, DOWNLOAD, PROGRAM)
-
--------------------------------------------------------------------------------
-  Todo list:
-    0. fix all @todo points
-    1. implement daq processor
-    2. implement programming (flash file download)
-    3. implement resource protection
-    4. test test test
--------------------------------------------------------------------------------
-*/
-
 /*****************************************************************************/
 /* local macro constants                                                     */
 /*****************************************************************************/
