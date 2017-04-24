@@ -1,5 +1,5 @@
 /* MIT License see LICENSE file             */
-/* - Copyright (c) 2016 0xFAB - Fabian Zahn */
+/* - Copyright (c) 2016-2017 0xFAB - Fabian Zahn */
 
 #include <stdio.h>
 #include <stdint.h>

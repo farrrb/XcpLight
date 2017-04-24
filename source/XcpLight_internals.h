@@ -1,5 +1,5 @@
 /* MIT License see LICENSE file             */
-/* - Copyright (c) 2016 0xFAB - Fabian Zahn */
+/* - Copyright (c) 2016-2017 0xFAB - Fabian Zahn */
 
 #ifndef __XCPLIGHT_INTERNALS_H
 #define __XCPLIGHT_INTERNALS_H

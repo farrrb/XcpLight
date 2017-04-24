@@ -1,4 +1,6 @@
-# Copyright (c) 2016 0xFAB - Fabian Zahn
+# MIT License see LICENSE file
+# - Copyright (c) 2016-2017 0xFAB - Fabian Zahn
+
 cmake_minimum_required(VERSION 2.8.7)
 
 #set project name

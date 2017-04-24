@@ -1,5 +1,5 @@
 /* MIT License see LICENSE file             */
-/* - Copyright (c) 2016 0xFAB - Fabian Zahn */
+/* - Copyright (c) 2016-2017 0xFAB - Fabian Zahn */
 
 #ifndef _s_TEST_HELPER_H
 #define __TEST_HELPER_H
