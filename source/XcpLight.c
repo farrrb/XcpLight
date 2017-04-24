@@ -46,9 +46,10 @@ XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t error
 
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
+
+XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 
 XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
 XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
@@ -149,6 +150,20 @@ XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessag
   return MSG_SEND;
 }
 
+XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+{
+  pReplyMsg->length = 6u;
+  pReplyMsg->payload[0] = XCP_PID_RES;
+  pReplyMsg->payload[1] = _XcpLightData.sessionStatus;
+  pReplyMsg->payload[2] = _XcpLightData.protectionStatus;
+  pReplyMsg->payload[3] = 0x00u; /* STATE_NUMBER: ECU_STATES not supported */
+
+  pReplyMsg->payload[4] = 0x00u; // @todo: Session configuration id
+  pReplyMsg->payload[5] = 0x00u; // @todo: Session configuration id
+
+  return MSG_SEND;
+}
+
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
 {
   return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
@@ -165,20 +180,6 @@ XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pCmdMsg, XcpLightM
   pReplyMsg->payload[5] = 0x00u; // @todo: MAX_ST
   pReplyMsg->payload[6] = 0x00u; // @todo: QUEUE_SIZE
   pReplyMsg->payload[7] = XCP_VER_DRIVER;
-
-  return MSG_SEND;
-}
-
-XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
-{
-  pReplyMsg->length = 6u;
-  pReplyMsg->payload[0] = XCP_PID_RES;
-  pReplyMsg->payload[1] = _XcpLightData.sessionStatus;
-  pReplyMsg->payload[2] = _XcpLightData.protectionStatus;
-  pReplyMsg->payload[3] = 0x00u; /* STATE_NUMBER: ECU_STATES not supported */
-
-  pReplyMsg->payload[4] = 0x00u; // @todo: Session configuration id
-  pReplyMsg->payload[5] = 0x00u; // @todo: Session configuration id
 
   return MSG_SEND;
 }
