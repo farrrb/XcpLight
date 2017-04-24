@@ -61,18 +61,11 @@ XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 XCP_STATIC_INLINE uint32_t _BuildU32FromU8Array(uint8_t *pArray)
 {
   uint32_t tmpAddress;
-
-#ifdef XCPLIGHT_CFG_LITTLE_ENDIAN
+  
   tmpAddress  = (pArray[0] & 0xFFu) <<  0u;
   tmpAddress |= (pArray[1] & 0xFFu) <<  8u;
   tmpAddress |= (pArray[2] & 0xFFu) << 16u;
   tmpAddress |= (pArray[3] & 0xFFu) << 24u;
-#else
-  tmpAddress  = (pArray[0] & 0xFFu) << 24u;
-  tmpAddress |= (pArray[1] & 0xFFu) << 16u;
-  tmpAddress |= (pArray[2] & 0xFFu) <<  8u;
-  tmpAddress |= (pArray[3] & 0xFFu) <<  0u;
-#endif
 
   return tmpAddress;
 }
