@@ -17,14 +17,16 @@
 /* How many bytes are addressed by one address? Valid values are 1, 2, 4*/
 #define XCPLIGHT_CFG_ADDRESS_GRANULARITY 1 
 
+
+/** OPTIONS **/
+/* Enable login and unlock resources via seed & key */
+#define XCPLIGHT_CFG_SEED_AND_KEY 1
+
 /* Enable user specific hook for implementing own commands: XCP command code is 0xF1 */
 #define XCPLIGHT_CFG_USER_CMD 1
 
-//#define XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
-
-/** OPTIONS **/
-/* CAL */
-//#define XCPLIGHT_CFG_ENABLE_CALPAG
+/* CAL & PAG */
+#define XCPLIGHT_CFG_ENABLE_CALPAG 1
 
 /* DAQ */
 //#define XCPLIGHT_CFG_ENABLE_DAQ

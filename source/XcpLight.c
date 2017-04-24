@@ -50,8 +50,11 @@ XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t *pMsg, XcpLightMessage_t *
 XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 
 XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+
+#ifdef XCPLIGHT_CFG_SEED_AND_KEY
 XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+#endif // XCPLIGHT_CFG_SEED_AND_KEY
 
 #ifdef XCPLIGHT_CFG_USER_CMD
 XCP_STATIC_INLINE int _CmdUserCmd(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
@@ -60,7 +63,10 @@ XCP_STATIC_INLINE int _CmdUserCmd(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
 XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+
+#ifdef XCPLIGHT_CFG_ENABLE_CALPAG
 XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+#endif // XCPLIGHT_CFG_ENABLE_CALPAG
 
 /*****************************************************************************/
 /* local functions                                                           */
@@ -93,6 +99,7 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
   pReplyMsg->payload[0] = XCP_PID_RES;
 
   pReplyMsg->payload[1] = 0u;
+
 #ifdef XCPLIGHT_CFG_ENABLE_CALPAG
   pReplyMsg->payload[1] |= XCP_RES_CALPAG;
 #endif
@@ -130,7 +137,7 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
   pReplyMsg->payload[7] = XCP_VER_TRANSPORT_LAYER;
 
   /* protect all resources */
-  #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
+  #ifdef XCPLIGHT_CFG_SEED_AND_KEY
   _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
   #endif
 
@@ -143,7 +150,7 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
 XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   /* protect all resources */
-  #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
+  #ifdef XCPLIGHT_CFG_SEED_AND_KEY
   _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
   #endif
 
@@ -190,16 +197,17 @@ XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t *pMsg, XcpLightMessa
   return MSG_SEND;
 }
 
+#ifdef XCPLIGHT_CFG_SEED_AND_KEY
 XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  return MSG_SEND;
+  return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
 }
 
 XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  return MSG_SEND;
+  return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
 }
-
+#endif // XCPLIGHT_CFG_SEED_AND_KEY
 
 #ifdef XCPLIGHT_CFG_USER_CMD
 XCP_STATIC_INLINE int _CmdUserCmd(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
@@ -272,6 +280,7 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t
   return MSG_SEND;
 }
 
+#ifdef XCPLIGHT_CFG_ENABLE_CALPAG
 XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   uint8_t length = (pMsg->payload[1] & 0xFFu);
@@ -289,6 +298,7 @@ XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t *pMsg, XcpLightMessage_t *p
 
   return MSG_SEND;
 }
+#endif // XCPLIGHT_CFG_ENABLE_CALPAG
 
 /*****************************************************************************/
 /* external functions                                                        */
@@ -298,7 +308,7 @@ void XcpLight_Init(void)
   _XcpLightData.timestampCounter = 0u;
   _XcpLightData.sessionStatus    = XCP_SES_RESET_SESSION;
 
-  #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
+  #ifdef XCPLIGHT_CFG_SEED_AND_KEY
   _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
   #else
   _XcpLightData.protectionStatus = 0u;
@@ -352,13 +362,15 @@ void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg)
           sendFlag = _CmdGetCommModeInfo(pMsg, pReplyMsg);
           break;
 
+#ifdef XCPLIGHT_CFG_SEED_AND_KEY
         case XCP_CMD_GET_SEED:
-          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+          sendFlag = _CmdGetSeed(pMsg, pReplyMsg);
           break;
 
         case XCP_CMD_UNLOCK:
-          sendFlag = _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+          sendFlag = _CmdUnlock(pMsg, pReplyMsg);
           break;
+#endif // XCPLIGHT_CFG_SEED_AND_KEY
 
 #ifdef XCPLIGHT_CFG_USER_CMD
         case XCP_CMD_USER_CMD:
@@ -379,7 +391,8 @@ void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg)
           break;
         /* STD : standard commands -> end */
 
-        /* CAL : standard commands -> end */
+#ifdef XCPLIGHT_CFG_ENABLE_CALPAG
+        /* CAL : standard commands -> begin */
         case XCP_CMD_DOWNLOAD:
           sendFlag = _CmdDownload(pMsg, pReplyMsg);
           break;
@@ -392,6 +405,7 @@ void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg)
         /* PAG: page switching commands -> begin */
         /* @note: not supported yet */
         /* PAG: page switching commands -> end */
+#endif // XCPLIGHT_CFG_ENABLE_CALPAG
 
         /* DAQ: data aquisition commands -> begin */
         /* @note: not supported yet */
