@@ -240,22 +240,26 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
     // send XCPLIGHT_CFG_XTO_LENGTH-2 bytes
     if (_XcpLightData.remainingSeedBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
     {
+      pReplyMsg->length = XCPLIGHT_CFG_XTO_LENGTH;
+
       seedBytes = (XCPLIGHT_CFG_XTO_LENGTH - 2);
       _XcpLightData.remainingSeedBytes -= (XCPLIGHT_CFG_XTO_LENGTH - 2);
     }
     else
     {
+      pReplyMsg->length = 2 + _XcpLightData.remainingSeedBytes;
+
       seedBytes = _XcpLightData.remainingSeedBytes;
       _XcpLightData.remainingSeedBytes = 0u;
     }
 
-    pReplyMsg->length = 2 + seedBytes;
+    // assemble payload
     pReplyMsg->payload[0] = XCP_PID_RES;
-    pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes;
+    pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes & 0xFFu;
 
     for (i = 0; i < seedBytes; i++)
     {
-      pReplyMsg->payload[1+i] = _XcpLightData.seed[i];
+      pReplyMsg->payload[1+i] = _XcpLightData.seed[i] & 0xFFu;
     }
   }
   
