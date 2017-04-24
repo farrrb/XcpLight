@@ -259,7 +259,7 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
 
     for (i = 0; i < seedBytes; i++)
     {
-      pReplyMsg->payload[1+i] = _XcpLightData.seed[i] & 0xFFu;
+      pReplyMsg->payload[2+i] = _XcpLightData.seed[i] & 0xFFu;
     }
   }
   
