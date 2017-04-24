@@ -25,7 +25,7 @@ XcpLightMessage_t replyMsg = {0,{0}};
 /* external functions                                                        */
 /*****************************************************************************/
 
-void XcpLight_SendMessage(XcpLightMessage_t * pMsg)
+void XcpLight_SendMessage(XcpLightMessage_t *pMsg)
 {
   /* XcpLightTransportLayerSend(pMsg); */
   replyMsg = *pMsg;
@@ -36,30 +36,37 @@ void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension)
   return (void *)(address);
 }
 
-void XcpLight_ReadFromAddress(uint8_t * addr, uint8_t length, uint8_t * buffer)
+void XcpLight_ReadFromAddress(uint8_t *source, uint8_t length, uint8_t *buffer)
 {
-  if (addr)
+  if (source)
   {
     while (length)
     {
-      *buffer = (*addr);
+      *buffer = (*source);
       buffer++;
-      addr++;
+      source++;
       length--;
     }
   }
 }
 
-void XcpLight_WriteToAddress(uint8_t * addr, uint8_t length, uint8_t * data)
+void XcpLight_WriteToAddress(uint8_t *dest, uint8_t length, uint8_t * data)
 {
-  if (addr)
+  if (dest)
   {
     while (length)
     {
-      *addr = (*data);
+      *dest = (*data);
       data++;
-      addr++;
+      dest++;
       length--;
     }
   }
 }
+
+#ifdef XCP_CFG_USER_CMD
+extern void XcpLight_ProcessUserCommand(XcpLightMessage_t *pMsg)
+{
+  return;
+}
+#endif // XCP_CFG_USER_CMD

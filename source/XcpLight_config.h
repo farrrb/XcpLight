@@ -17,6 +17,9 @@
 /* How many bytes are addressed by one address? Valid values are 1, 2, 4*/
 #define XCPLIGHT_CFG_ADDRESS_GRANULARITY 1 
 
+/* Enable user specific hook for implementing own commands: XCP command code is 0xF1 */
+#define XCP_CFG_USER_CMD 1
+
 //#define XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
 
 /** OPTIONS **/

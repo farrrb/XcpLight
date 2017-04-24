@@ -42,19 +42,25 @@ XcpLightInternals_t _XcpLightData = {0};
 /* local functions - prototypes                                              */
 /*****************************************************************************/
 XCP_STATIC_INLINE uint32_t _BuildU32FromU8Array(uint8_t *pArray);
-XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
+XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t *pMsg, uint8_t errorCode);
 
-XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 
-XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 
-XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
-XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg);
+#ifdef XCP_CFG_USER_CMD
+XCP_STATIC_INLINE int _CmdUserCmd(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+#endif // XCP_CFG_USER_CMD
+
+XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 
 /*****************************************************************************/
 /* local functions                                                           */
@@ -71,7 +77,7 @@ XCP_STATIC_INLINE uint32_t _BuildU32FromU8Array(uint8_t *pArray)
   return tmpAddress;
 }
 
-XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
+XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t *pMsg, uint8_t errorCode)
 {
   pMsg->length = 2u;
   pMsg->payload[0] = XCP_PID_ERR;
@@ -80,7 +86,7 @@ XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t error
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   /* process the connect command anytime -> independence of state */
   pReplyMsg->length = 8u;
@@ -134,7 +140,7 @@ XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   /* protect all resources */
   #ifdef XCPLIGHT_CFG_ENABLE_RESOURCE_PROTECTION
@@ -150,7 +156,7 @@ XCP_STATIC_INLINE int _CmdDisconnect(XcpLightMessage_t * pCmdMsg, XcpLightMessag
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   pReplyMsg->length = 6u;
   pReplyMsg->payload[0] = XCP_PID_RES;
@@ -164,12 +170,12 @@ XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t 
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdSynch(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_SYNCH);
 }
 
-XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   pReplyMsg->length = 8u;
   pReplyMsg->payload[0] = XCP_PID_RES;
@@ -184,7 +190,26 @@ XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t * pCmdMsg, XcpLightM
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
+{
+  return MSG_SEND;
+}
+
+XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
+{
+  return MSG_SEND;
+}
+
+
+#ifdef XCP_CFG_USER_CMD
+XCP_STATIC_INLINE int _CmdUserCmd(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
+{
+  return MSG_SEND;
+}
+
+#endif // XCP_CFG_USER_CMD
+
+XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   uint32_t tmpAddress = 0;
   uint8_t  tmpAddressExt = 0;
@@ -202,7 +227,7 @@ XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * p
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   uint8_t  length = (pMsg->payload[1] & 0xFFu);
 
@@ -221,7 +246,7 @@ XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * p
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   uint32_t tmpAddress;
   uint8_t  tmpAddressExt = 0;
@@ -247,7 +272,7 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_
   return MSG_SEND;
 }
 
-XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
+XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
   uint8_t length = (pMsg->payload[1] & 0xFFu);
   if (length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
@@ -285,9 +310,9 @@ void XcpLight_UpdateTimestampCounter(void)
   _XcpLightData.timestampCounter++;
 }
 
-void XcpLight_CommandProcessor(XcpLightMessage_t * pMsg)
+void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg)
 {
-  XcpLightMessage_t * pReplyMsg = &(_XcpLightData.ctoReplyMsg);
+  XcpLightMessage_t *pReplyMsg = &(_XcpLightData.ctoReplyMsg);
 
 #ifdef XCPLIGHT_CFG_DEBUG_CMD_MSG
   _XcpLightData.ctoCmdMsg = *pMsg; /* copy to internal state (for ext. debugging) */
