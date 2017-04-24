@@ -32,7 +32,7 @@
 /* local data                                                                */
 /*****************************************************************************/
 /* internal data structure for state etc. */
-XcpLightInternals_t _XcpLightData = {0};
+XcpLightInternals_t _XcpLightData = {{0}};
 
 /*****************************************************************************/
 /* local macro functions                                                     */
