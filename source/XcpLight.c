@@ -277,6 +277,7 @@ XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pRe
 
   if (remainingKeyBytes > XCPLIGHT_CFG_KEY_LENGTH)
   {
+    _XcpLightData.keyIndex = 0;
     _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
   else
