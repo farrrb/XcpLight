@@ -74,5 +74,5 @@ int  XcpLight_Event(uint8_t eventNo);                     // the DAQ events (not
 
 ## Resources
 [XCP on ASAM Wiki](https://wiki.asam.net/display/STANDARDS/ASAM+MCD-1+XCP)   
-[XCP Reference Book by Vector Informatik GmbH](http://vector.com/portal/medien/solutions_for/xcp/XCP_ReferenceBook_V1.0_EN.pdf)   
+[XCP Reference Book by Vector Informatik GmbH](https://vector.com/vi_xcp-book_en.html)   
 [XCP on Wikipedia](https://en.wikipedia.org/wiki/XCP_(protocol))   
