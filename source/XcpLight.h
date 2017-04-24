@@ -15,6 +15,11 @@ extern "C"
 /* macro constants                                                           */
 /*****************************************************************************/
 
+#ifdef XCPLIGHT_CFG_SEED_AND_KEY
+  #define XCP_RET_UNLOCK_SUCCESS 1
+  #define XCP_RET_UNLOCK_FAILED  0
+#endif // XCPLIGHT_CFG_SEED_AND_KEY
+
 /*****************************************************************************/
 /* struct and type definitions (struct, enum and typedef)                    */
 /*****************************************************************************/
@@ -53,6 +58,11 @@ extern void XcpLight_WriteToAddress(uint8_t *dest, uint8_t length, uint8_t *data
 #ifdef XCPLIGHT_CFG_USER_CMD
 extern int XcpLight_ProcessUserCommand(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
 #endif // XCPLIGHT_CFG_USER_CMD
+
+#ifdef XCPLIGHT_CFG_SEED_AND_KEY
+extern void XcpLight_GetSeed(uint8_t resource, uint8_t *seed);
+extern int XcpLight_UnlockResource(uint8_t resource, uint8_t *key);
+#endif // XCPLIGHT_CFG_SEED_AND_KEY
 
 #ifdef __cplusplus
 }

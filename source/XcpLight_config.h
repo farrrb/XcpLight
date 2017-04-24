@@ -21,6 +21,8 @@
 /** OPTIONS **/
 /* Enable login and unlock resources via seed & key */
 #define XCPLIGHT_CFG_SEED_AND_KEY 1
+#define XCPLIGHT_CFG_SEED_LENGTH 10
+#define XCPLIGHT_CFG_KEY_LENGTH  10
 
 /* Enable user specific hook for implementing own commands: XCP command code is 0xF1 */
 #define XCPLIGHT_CFG_USER_CMD 1

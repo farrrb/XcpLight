@@ -9,7 +9,8 @@ extern "C"
 {
 #endif
 
-#include "XcpLight_config.h"
+#include "XcpLight.h"
+#include "XcpLight_internals.h"
 
 /*****************************************************************************/
 /* macro constants                                                           */
@@ -188,18 +189,23 @@ extern "C"
 /* internal data structure */
 typedef struct XcpLightInternals
 {
-  uint32_t timestampCounter;
-  uint8_t sessionStatus;
-  uint8_t protectionStatus;
-  uint8_t currentCommand;
 #ifdef XCPLIGHT_CFG_DEBUG_CMD_MSG
   XcpLightMessage_t ctoCmdMsg;
 #endif
   XcpLightMessage_t ctoReplyMsg;
   void * mta;
-
+  uint32_t timestampCounter;
+  uint8_t sessionStatus;
+  uint8_t protectionStatus;
+  uint8_t currentCommand;
+#ifdef XCPLIGHT_CFG_SEED_AND_KEY
+  uint8_t seed[XCPLIGHT_CFG_SEED_LENGTH];
+  uint8_t key[XCPLIGHT_CFG_KEY_LENGTH];
+  uint8_t remainingSeedBytes;
+  uint8_t remainingKeyBytes;
+  uint8_t unlockResource;
+#endif // XCPLIGHT_CFG_SEED_AND_KEY
 } XcpLightInternals_t;
-
 
 #ifdef __cplusplus
 }

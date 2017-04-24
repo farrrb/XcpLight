@@ -200,7 +200,80 @@ XCP_STATIC_INLINE int _CmdGetCommModeInfo(XcpLightMessage_t *pMsg, XcpLightMessa
 #ifdef XCPLIGHT_CFG_SEED_AND_KEY
 XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  return _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+  uint8_t mode = pMsg->payload[2] & 0xFFu;
+  uint8_t seedBytes;
+  int i;
+
+  if (mode == 0u) // first part
+  {
+    _XcpLightData.unlockResource = pMsg->payload[1] & 0xFFu;
+
+    if (_XcpLightData.protectionStatus & _XcpLightData.unlockResource) // resource is protected
+    {
+      XcpLight_GetSeed(_XcpLightData.unlockResource , _XcpLightData.seed);
+      _XcpLightData.remainingSeedBytes = XCPLIGHT_CFG_SEED_LENGTH;
+
+      // send first XCPLIGHT_CFG_XTO_LENGTH-2 bytes
+      if (_XcpLightData.remainingSeedBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
+      {
+        seedBytes = (XCPLIGHT_CFG_XTO_LENGTH - 2);
+        _XcpLightData.remainingSeedBytes -= (XCPLIGHT_CFG_XTO_LENGTH - 2);
+      }
+      else
+      {
+        seedBytes = _XcpLightData.remainingSeedBytes;
+        _XcpLightData.remainingSeedBytes = 0u;
+      }
+
+      pReplyMsg->length = 2 + seedBytes;
+      pReplyMsg->payload[0] = XCP_PID_RES;
+      pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes;
+      
+      for (i = 0; i < seedBytes; i++)
+      {
+        pReplyMsg->payload[1+i] = _XcpLightData.seed[i];
+      }
+      
+    }
+    else // resource is unprotected
+    {
+      pReplyMsg->length = 2u;
+      pReplyMsg->payload[0] = XCP_PID_RES;
+      pReplyMsg->payload[0] = 0u; // resource is not protected
+    } 
+  }
+  else // remaining length of seed
+  {
+    if (_XcpLightData.remainingSeedBytes == 0u)
+    {
+      _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
+    }
+    else
+    {
+      // send next XCPLIGHT_CFG_XTO_LENGTH-2 bytes
+      if (_XcpLightData.remainingSeedBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
+      {
+        seedBytes = (XCPLIGHT_CFG_XTO_LENGTH - 2);
+        _XcpLightData.remainingSeedBytes -= (XCPLIGHT_CFG_XTO_LENGTH - 2);
+      }
+      else
+      {
+        seedBytes = _XcpLightData.remainingSeedBytes;
+        _XcpLightData.remainingSeedBytes = 0u;
+      }
+
+      pReplyMsg->length = 2 + seedBytes;
+      pReplyMsg->payload[0] = XCP_PID_RES;
+      pReplyMsg->payload[1] = _XcpLightData.remainingSeedBytes;
+      
+      for (i = 0; i < seedBytes; i++)
+      {
+        pReplyMsg->payload[1+i] = _XcpLightData.seed[i];
+      }
+    }
+  }
+  
+  return MSG_SEND;
 }
 
 XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
