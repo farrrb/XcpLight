@@ -199,11 +199,12 @@ typedef struct XcpLightInternals
   uint8_t protectionStatus;
   uint8_t currentCommand;
 #ifdef XCPLIGHT_CFG_SEED_AND_KEY
-  uint8_t seed[XCPLIGHT_CFG_SEED_LENGTH];
-  uint8_t key[XCPLIGHT_CFG_KEY_LENGTH];
-  uint8_t remainingSeedBytes;
-  uint8_t remainingKeyBytes;
   uint8_t unlockResource;
+  uint8_t seed[XCPLIGHT_CFG_SEED_LENGTH];
+  uint8_t seedIndex;
+  uint8_t remainingSeedBytes;
+  uint8_t key[XCPLIGHT_CFG_KEY_LENGTH];
+  uint8_t keyIndex;
 #endif // XCPLIGHT_CFG_SEED_AND_KEY
 } XcpLightInternals_t;
 

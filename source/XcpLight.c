@@ -207,6 +207,7 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
 
   if (mode == 0u) // first part
   {
+    _XcpLightData.seedIndex = 0u;
     _XcpLightData.unlockResource = pMsg->payload[1] & 0xFFu;
 
     if (_XcpLightData.protectionStatus & _XcpLightData.unlockResource) // resource is protected
@@ -226,6 +227,7 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
   {
     if (_XcpLightData.remainingSeedBytes == 0u)
     {
+      _XcpLightData.seedIndex = 0u;
       _BuildErrorMessage(pReplyMsg, XCP_ERR_SEQUENCE);
     }
     else
@@ -259,7 +261,7 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
 
     for (i = 0; i < seedBytes; i++)
     {
-      pReplyMsg->payload[2+i] = _XcpLightData.seed[i] & 0xFFu;
+      pReplyMsg->payload[2+i] = _XcpLightData.seed[_XcpLightData.seedIndex++] & 0xFFu;
     }
   }
   
@@ -268,14 +270,65 @@ XCP_STATIC_INLINE int _CmdGetSeed(XcpLightMessage_t *pMsg, XcpLightMessage_t *pR
 
 XCP_STATIC_INLINE int _CmdUnlock(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg)
 {
-  if ((pMsg->payload[1] & 0xFFu) > XCPLIGHT_CFG_KEY_LENGTH)
+  uint8_t remainingKeyBytes = (pMsg->payload[1] & 0xFFu);
+  uint8_t keyBytes;
+  int i;
+  int calculateKey = 0;
+
+  if (remainingKeyBytes > XCPLIGHT_CFG_KEY_LENGTH)
   {
     _BuildErrorMessage(pReplyMsg, XCP_ERR_OUT_OF_RANGE);
   }
   else
   {
-    _BuildErrorMessage(pReplyMsg, XCP_ERR_CMD_UNKNOWN);
+    if (remainingKeyBytes)
+    {
+      if (remainingKeyBytes > (XCPLIGHT_CFG_XTO_LENGTH - 2))
+      {
+        keyBytes = (XCPLIGHT_CFG_XTO_LENGTH - 2);
+      }
+      else
+      {
+        keyBytes = remainingKeyBytes;
+        calculateKey = 1;
+      }
+
+      for (i = 0; i < keyBytes; i++)
+      {
+        _XcpLightData.key[_XcpLightData.keyIndex++] = pMsg->payload[2+i];
+      }
+
+    }
+    else
+    {
+      keyBytes = (pMsg->length & 0xFFu) - 2u;
+
+      for (i = 0; i < keyBytes; i++)
+      {
+        _XcpLightData.key[_XcpLightData.keyIndex++] = pMsg->payload[2+i] & 0xFFu;
+      }
+      calculateKey = 1;
+    }
   } 
+
+  if (calculateKey)
+  {
+    if (XcpLight_UnlockResource(_XcpLightData.unlockResource, _XcpLightData.key))
+      {
+        _XcpLightData.keyIndex = 0;
+        _XcpLightData.protectionStatus &= (~(_XcpLightData.unlockResource) & 0xFFu);
+
+        pReplyMsg->length = 2u;
+        pReplyMsg->payload[0] = XCP_PID_RES;
+        pReplyMsg->payload[1] = _XcpLightData.protectionStatus;
+      }
+      else
+      {
+        _XcpLightData.keyIndex = 0;
+        _BuildErrorMessage(pReplyMsg, XCP_ERR_ACCESS_LOCKED);
+      }    
+  }
+
   return MSG_SEND;
 }
 #endif // XCPLIGHT_CFG_SEED_AND_KEY
@@ -387,6 +440,11 @@ void XcpLight_Init(void)
 {
   _XcpLightData.timestampCounter = 0u;
   _XcpLightData.sessionStatus    = XCP_SES_RESET_SESSION;
+
+  _XcpLightData.seedIndex = 0u;
+  _XcpLightData.remainingSeedBytes = 0u;
+  _XcpLightData.keyIndex = 0u;
+  _XcpLightData.unlockResource = 0u;
 
   #ifdef XCPLIGHT_CFG_SEED_AND_KEY
   _XcpLightData.protectionStatus = XCP_PRT_PROTECT_ALL;
