@@ -56,6 +56,7 @@ XcpLightInternals_t _XcpLightData = {0};
 /*****************************************************************************/
 /* local functions - prototypes                                              */
 /*****************************************************************************/
+XCP_STATIC_INLINE uint32_t _BuildU32FromU8Array(uint8_t *pArray);
 XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode);
 
 XCP_STATIC_INLINE int _CmdConnect(XcpLightMessage_t * pCmdMsg, XcpLightMessage_t * pReplyMsg);
@@ -71,6 +72,25 @@ XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t * pMsg, XcpLightMessage_t *
 /*****************************************************************************/
 /* local functions                                                           */
 /*****************************************************************************/
+XCP_STATIC_INLINE uint32_t _BuildU32FromU8Array(uint8_t *pArray)
+{
+  uint32_t tmpAddress;
+
+#ifdef XCPLIGHT_CFG_LITTLE_ENDIAN
+  tmpAddress  = (pArray[0] & 0xFFu) <<  0u;
+  tmpAddress |= (pArray[1] & 0xFFu) <<  8u;
+  tmpAddress |= (pArray[2] & 0xFFu) << 16u;
+  tmpAddress |= (pArray[3] & 0xFFu) << 24u;
+#else
+  tmpAddress  = (pArray[0] & 0xFFu) << 24u;
+  tmpAddress |= (pArray[1] & 0xFFu) << 16u;
+  tmpAddress |= (pArray[2] & 0xFFu) <<  8u;
+  tmpAddress |= (pArray[3] & 0xFFu) <<  0u;
+#endif
+
+  return tmpAddress;
+}
+
 XCP_STATIC_INLINE int _BuildErrorMessage(XcpLightMessage_t * pMsg, uint8_t errorCode)
 {
   pMsg->length = 2u;
@@ -173,7 +193,7 @@ XCP_STATIC_INLINE int _CmdGetStatus(XcpLightMessage_t * pMsg, XcpLightMessage_t 
 
 XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_t * pReplyMsg)
 {
-  uint32_t tmpAddress = 0;
+  uint32_t tmpAddress;
   uint8_t  tmpAddressExt = 0;
   uint8_t  length = (pMsg->payload[1] & 0xFFu);
 
@@ -183,10 +203,7 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t * pMsg, XcpLightMessage_
     pReplyMsg->payload[0] = XCP_PID_RES;
     tmpAddressExt  = (pMsg->payload[3] & 0xFFu);  
     
-    tmpAddress |= ((pMsg->payload[4] & 0xFFu) <<  0u);
-    tmpAddress |= ((pMsg->payload[5] & 0xFFu) <<  8u);
-    tmpAddress |= ((pMsg->payload[6] & 0xFFu) << 16u);
-    tmpAddress |= ((pMsg->payload[7] & 0xFFu) << 24u);
+    tmpAddress = _BuildU32FromU8Array(&(pMsg->payload[4]));
 
     _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
 
@@ -211,10 +228,7 @@ XCP_STATIC_INLINE int _CmdSetMta(XcpLightMessage_t * pMsg, XcpLightMessage_t * p
 
   tmpAddressExt = (pMsg->payload[3] & 0xFFu);
 
-  tmpAddress |= ((pMsg->payload[4] & 0xFFu) <<  0u);
-  tmpAddress |= ((pMsg->payload[5] & 0xFFu) <<  8u);
-  tmpAddress |= ((pMsg->payload[6] & 0xFFu) << 16u);
-  tmpAddress |= ((pMsg->payload[7] & 0xFFu) << 24u);
+  tmpAddress = _BuildU32FromU8Array(&(pMsg->payload[4]));
 
   _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
 
