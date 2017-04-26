@@ -96,6 +96,9 @@ void test_Upload(void)
   TEST_ASSERT_EQUAL_UINT8(0xBEu, replyMsg.payload[2]);
   TEST_ASSERT_EQUAL_UINT8(0xADu, replyMsg.payload[3]);
   TEST_ASSERT_EQUAL_UINT8(0xDEu, replyMsg.payload[4]);
+
+  uint32_t address = (uint32_t)&uploadVariable;
+  TEST_ASSERT_EQUAL_UINT32(address + 4, _XcpLightData.mta);
 }
 
 void test_ShortUpload(void)
@@ -124,6 +127,9 @@ void test_ShortUpload(void)
   TEST_ASSERT_EQUAL_UINT8(0xBEu, replyMsg.payload[2]);
   TEST_ASSERT_EQUAL_UINT8(0xADu, replyMsg.payload[3]);
   TEST_ASSERT_EQUAL_UINT8(0xDEu, replyMsg.payload[4]);
+
+  uint32_t address = (uint32_t)&shortUploadVariable;
+  TEST_ASSERT_EQUAL_UINT32(address + 4, _XcpLightData.mta);
 }
 
 void test_Download(void)
@@ -162,6 +168,9 @@ void test_Download(void)
   XcpLight_CommandProcessor(&cmdMsg);
 
   TEST_ASSERT(downloadVariable == 0xFAB11337);
+  uint32_t address = (uint32_t)&downloadVariable;
+  TEST_ASSERT_EQUAL_UINT32(address + 4, _XcpLightData.mta);
+
 }
 
 int main(void)

@@ -37,6 +37,7 @@ XcpLightInternals_t _XcpLightData = {{0}};
 /*****************************************************************************/
 /* local macro functions                                                     */
 /*****************************************************************************/
+#define IncrementPointer(ptr, bytes) ((void *)((uint32_t)(ptr) + (uint32_t)(bytes)))
 
 /*****************************************************************************/
 /* local functions - prototypes                                              */
@@ -379,6 +380,7 @@ XCP_STATIC_INLINE int _CmdUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t *pRe
     pReplyMsg->payload[0] = XCP_PID_RES;
 
     XcpLight_ReadFromAddress((uint8_t *)_XcpLightData.mta, length, &(pReplyMsg->payload[1]));
+    _XcpLightData.mta = IncrementPointer(_XcpLightData.mta, length);
   }
   else
   {
@@ -405,6 +407,7 @@ XCP_STATIC_INLINE int _CmdShortUpload(XcpLightMessage_t *pMsg, XcpLightMessage_t
     _XcpLightData.mta = XcpLight_GetPointer(tmpAddress, tmpAddressExt);
 
     XcpLight_ReadFromAddress((uint8_t *)_XcpLightData.mta, length, &(pReplyMsg->payload[1]));
+    _XcpLightData.mta = IncrementPointer(_XcpLightData.mta, length);
   }
   else
   {
@@ -429,6 +432,7 @@ XCP_STATIC_INLINE int _CmdDownload(XcpLightMessage_t *pMsg, XcpLightMessage_t *p
     if (length < (XCPLIGHT_CFG_XTO_LENGTH - 1u))
     {
       XcpLight_WriteToAddress((uint8_t *)_XcpLightData.mta, length, &(pMsg->payload[2]));
+      _XcpLightData.mta = IncrementPointer(_XcpLightData.mta, length);
 
       pReplyMsg->length = 1u;
       pReplyMsg->payload[0] = XCP_PID_RES;
