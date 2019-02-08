@@ -1,78 +1,163 @@
-/* MIT License see LICENSE file             */
-/* - Copyright (c) 2016-2017 0xFAB - Fabian Zahn */
+////////////////////////////////////////////////////////////////////////////////
+/// MIT License see LICENSE file
+/// Copyright (c) 2016-2019 0xFAB - Fabian Zahn
+////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SOURCE_XCPLIGHT_H_
-#define SOURCE_XCPLIGHT_H_
+#ifndef XCPLIGHT_H__
+#define XCPLIGHT_H__
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include "XcpLight_config.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-/*****************************************************************************/
-/* macro constants                                                           */
-/*****************************************************************************/
+#include "XcpLightCfg.h"
 
-/** RESOURCE CODES **/
-#define XCPLIGHT_RES_CALPAG              (0x01u)
-#define XCPLIGHT_RES_DAQ                 (0x04u)
-#define XCPLIGHT_RES_STIM                (0x08u)
-#define XCPLIGHT_RES_PGM                 (0x10u)
+//------------------------------------------------------------------------------
+// Macro Constants
+//------------------------------------------------------------------------------
 
-/** RETURN CODES **/
-#ifdef XCPLIGHT_CFG_SEED_AND_KEY
-  #define XCPLIGHT_RET_UNLOCK_SUCCESS 1
-  #define XCPLIGHT_RET_UNLOCK_FAILED  0
-#endif // XCPLIGHT_CFG_SEED_AND_KEY
+/// \brief Resource Codes
+typedef enum XcpLightResource
+{
+  XCPLIGHT_RESOURCE_CALPAG = 0x01u,
+  XCPLIGHT_RESOURCE_DAQ    = 0x04u,
+  XCPLIGHT_RESOURCE_STIM   = 0x08u,
+  XCPLIGHT_RESOURCE_PGM    = 0x10u
+} XcpLightResource_t;
 
-/*****************************************************************************/
-/* struct and type definitions (struct, enum and typedef)                    */
-/*****************************************************************************/
+//------------------------------------------------------------------------------
+// Struct and Type Definitions (struct, enum and typedef)
+//------------------------------------------------------------------------------
 
-/* command transfer object */
+/// \brief Structure of one XCP Message (CTO / DTO)
 typedef struct
 {
   uint32_t length;
   uint8_t  payload[XCPLIGHT_CFG_XTO_LENGTH];
 } XcpLightMessage_t;
 
-/*****************************************************************************/
-/* external data                                                             */
-/*****************************************************************************/
+//------------------------------------------------------------------------------
+// External Data
+//------------------------------------------------------------------------------
 
-/*****************************************************************************/
-/* macro functions                                                           */
-/*****************************************************************************/
+//------------------------------------------------------------------------------
+// Macro Functions
+//------------------------------------------------------------------------------
 
-/*****************************************************************************/
-/* external functions                                                        */
-/*****************************************************************************/
+//------------------------------------------------------------------------------
+// External Functions
+//------------------------------------------------------------------------------
 
-/* api functions for xcp integration */
-void XcpLight_Init(void);
-void XcpLight_UpdateTimestampCounter(void);
-void XcpLight_CommandProcessor(XcpLightMessage_t *pMsg);
-int  XcpLight_Event(uint8_t eventNo);
+//==============================================================================
+// API Functions for XCP Integration
+//==============================================================================
 
-/* interface to transport layer */
-extern void XcpLight_SendMessage(XcpLightMessage_t *pMsg);
-extern void * XcpLight_GetPointer(uint32_t address, uint8_t address_extension);
-extern void XcpLight_ReadFromAddress(uint8_t *source, uint8_t length, uint8_t *buffer);
-extern void XcpLight_WriteToAddress(uint8_t *dest, uint8_t length, uint8_t *data);
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Initialization function
+////////////////////////////////////////////////////////////////////////////////
+void XcpLight_init(void);
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Cyclic update function for the timestamp counter
+///
+///             \note This function has to be called every 1 [ms]
+////////////////////////////////////////////////////////////////////////////////
+void XcpLight_updateTimestampCounter(void);
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Process a XCP message
+///
+///             After receiving a message via the transport layer this functions
+///             processes its payload and passes it to the respective command
+///             processor.
+///
+/// \param      msg   Pointer to the XCP message
+////////////////////////////////////////////////////////////////////////////////
+void XcpLight_processCommand(XcpLightMessage_t *msg);
+
+//==============================================================================
+// External Functions (to be defined in the configuration)
+//==============================================================================
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Send a XCP message via the transport layer
+///
+/// \param      msg   Pointer to the message
+////////////////////////////////////////////////////////////////////////////////
+extern void  XcpLightCfg_sendMessage(XcpLightMessage_t *msg);
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Evaluates an address (with address extension) and resolves it to
+///             a pointer in memory
+///
+/// \param[in]  address            The address
+/// \param[in]  address_extension  The address extension
+///
+/// \return     Pointer to the address for reading out / writing data
+////////////////////////////////////////////////////////////////////////////////
+extern void* XcpLightCfg_getPointer(uint32_t address, uint8_t address_extension);
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Reads an amount of data from source into buffer
+///
+/// \param      source  The source
+/// \param[in]  length  The length
+/// \param      buffer  The buffer
+////////////////////////////////////////////////////////////////////////////////
+extern void  XcpLightCfg_readFromAddress(uint8_t *source, uint8_t length, uint8_t *buffer);
+
+#ifdef XCPLIGHT_CFG_ENABLE_CALPAG
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Writes an amount of data from data to destination
+///
+/// \param      dest    The destination
+/// \param[in]  length  The length
+/// \param      data    The data
+////////////////////////////////////////////////////////////////////////////////
+extern void  XcpLightCfg_writeToAddress(uint8_t *dest, uint8_t length, uint8_t *data);
+#endif // XCPLIGHT_CFG_ENABLE_CALPAG
 
 #ifdef XCPLIGHT_CFG_USER_CMD
-extern int XcpLight_ProcessUserCommand(XcpLightMessage_t *pMsg, XcpLightMessage_t *pReplyMsg);
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Processes a user command (application specific)
+///
+/// \param      msg        The message
+/// \param      reply_msg  The reply message
+///
+/// \return     Whether or not to send a reply message (true := send / false := don't)
+////////////////////////////////////////////////////////////////////////////////
+extern bool XcpLightCfg_processUserCommand(XcpLightMessage_t *msg, XcpLightMessage_t *reply_msg);
 #endif // XCPLIGHT_CFG_USER_CMD
 
 #ifdef XCPLIGHT_CFG_SEED_AND_KEY
-extern void XcpLight_GetSeed(uint8_t resource, uint8_t *seed);
-extern int XcpLight_UnlockResource(uint8_t resource, uint8_t *key);
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Get a seed for the seed & key algorithm
+///
+/// \param[in]  resource  The resource
+/// \param      seed      The seed
+////////////////////////////////////////////////////////////////////////////////
+extern void XcpLightCfg_getSeed(XcpLightResource_t resource, uint8_t *seed);
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief      Unlocks a resource (user hook). Checks if the provided key
+///             matches the internal calculated key.
+///
+/// \param[in]  resource  The resource
+/// \param      key       The key
+///
+/// \return     Whether or not the unlock was successful
+///             (true := success / false := failure)
+////////////////////////////////////////////////////////////////////////////////
+extern bool XcpLightCfg_unlockResource(XcpLightResource_t resource, uint8_t *key);
 #endif // XCPLIGHT_CFG_SEED_AND_KEY
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // SOURCE_XCPLIGHT_H_
+#endif // XCPLIGHT_H__

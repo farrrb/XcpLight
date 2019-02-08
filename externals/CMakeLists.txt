@@ -1,3 +1,2 @@
-include_directories(Unity PUBLIC Unity/src)
-
-add_library(Unity STATIC Unity/src/unity.c)
+add_library(unity STATIC ${CMAKE_CURRENT_SOURCE_DIR}/Unity/src/unity.c)
+target_include_directories(unity INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/Unity/src)

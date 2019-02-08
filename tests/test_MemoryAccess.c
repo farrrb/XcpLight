@@ -1,5 +1,7 @@
-/* MIT License see LICENSE file             */
-/* - Copyright (c) 2016-2017 0xFAB - Fabian Zahn */
+////////////////////////////////////////////////////////////////////////////////
+/// MIT License see LICENSE file
+/// Copyright (c) 2016-2019 0xFAB - Fabian Zahn
+////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
 #include <stdint.h>
@@ -7,21 +9,21 @@
 #include "unity.h"
 
 #include "XcpLight.h"
-#include "XcpLight_internals.h"
+#include "XcpLightInternals.h"
 
 #include "TestHelper.h"
 
-extern XcpLightMessage_t replyMsg;
-extern XcpLightInternals_t _XcpLightData;
+extern XcpLightMessage_t reply_msg;
+extern XcpLightInternals_t XcpLight_self;
 
 XcpLightMessage_t cmdMsg = {0, {0}};
 
-/* test variables for mem read & write */
+// test variables for mem read & write
 uint32_t uploadVariable       = 0xDEADBEEFu;
 uint32_t shortUploadVariable  = 0xDEADBEEFu;
 uint32_t downloadVariable     = 0xDEADBEEFu;
 
-/* santa's little helper functions */
+// santa's little helper functions
 
 void clearCmdMessage(void)
 {
@@ -38,25 +40,25 @@ void clearReplyMessage(void)
   int i;
   for (i=0; i < XCPLIGHT_CFG_XTO_LENGTH; i++)
   {
-    replyMsg.payload[i] = 0u;
+    reply_msg.payload[i] = 0u;
   }
-  replyMsg.length = 0u;
+  reply_msg.length = 0u;
 }
 
-/* test setUp / tearDown */
+// test setUp / tearDown
 
 void setUp(void)
 {
   clearCmdMessage();
   clearReplyMessage();
-  XcpLight_Init();
+  XcpLight_init();
 }
 
 void tearDown(void)
 {
 }
 
-/* the actual tests */
+// the actual tests
 
 void test_Upload(void)
 {
@@ -76,9 +78,9 @@ void test_Upload(void)
   cmdMsg.payload[6] = ((addr >> 16) & 0xFFu);
   cmdMsg.payload[7] = ((addr >> 24) & 0xFFu);
 
-  XcpLight_CommandProcessor(&cmdMsg);
+  XcpLight_processCommand(&cmdMsg);
 
-  TEST_ASSERT(addr == (uint32_t)_XcpLightData.mta);
+  TEST_ASSERT(addr == (uint32_t)XcpLight_self.mta);
 
   clearCmdMessage();
   clearReplyMessage();
@@ -87,18 +89,18 @@ void test_Upload(void)
   cmdMsg.payload[0] = XCP_CMD_UPLOAD;
   cmdMsg.payload[1] = 4u;
 
-  XcpLight_CommandProcessor(&cmdMsg);
+  XcpLight_processCommand(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(   5u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:UPLOAD */
-  /* 0xDEADBEEFu */
-  TEST_ASSERT_EQUAL_UINT8(0xEFu, replyMsg.payload[1]);
-  TEST_ASSERT_EQUAL_UINT8(0xBEu, replyMsg.payload[2]);
-  TEST_ASSERT_EQUAL_UINT8(0xADu, replyMsg.payload[3]);
-  TEST_ASSERT_EQUAL_UINT8(0xDEu, replyMsg.payload[4]);
+  TEST_ASSERT_EQUAL_UINT8(   5u, reply_msg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFFu, reply_msg.payload[0]); // Ok:UPLOAD
+  // 0xDEADBEEFu
+  TEST_ASSERT_EQUAL_UINT8(0xEFu, reply_msg.payload[1]);
+  TEST_ASSERT_EQUAL_UINT8(0xBEu, reply_msg.payload[2]);
+  TEST_ASSERT_EQUAL_UINT8(0xADu, reply_msg.payload[3]);
+  TEST_ASSERT_EQUAL_UINT8(0xDEu, reply_msg.payload[4]);
 
   uint32_t address = (uint32_t)&uploadVariable;
-  TEST_ASSERT_EQUAL_UINT32(address + 4, _XcpLightData.mta);
+  TEST_ASSERT_EQUAL_UINT32(address + 4, XcpLight_self.mta);
 }
 
 void test_ShortUpload(void)
@@ -118,18 +120,18 @@ void test_ShortUpload(void)
   cmdMsg.payload[6] = ((addr >> 16) & 0xFFu);
   cmdMsg.payload[7] = ((addr >> 24) & 0xFFu);
 
-  XcpLight_CommandProcessor(&cmdMsg);
+  XcpLight_processCommand(&cmdMsg);
 
-  TEST_ASSERT_EQUAL_UINT8(   5u, replyMsg.length);
-  TEST_ASSERT_EQUAL_UINT8(0xFFu, replyMsg.payload[0]); /* Ok:SHORT_UPLOAD */
-  /* 0xDEADBEEFu */
-  TEST_ASSERT_EQUAL_UINT8(0xEFu, replyMsg.payload[1]);
-  TEST_ASSERT_EQUAL_UINT8(0xBEu, replyMsg.payload[2]);
-  TEST_ASSERT_EQUAL_UINT8(0xADu, replyMsg.payload[3]);
-  TEST_ASSERT_EQUAL_UINT8(0xDEu, replyMsg.payload[4]);
+  TEST_ASSERT_EQUAL_UINT8(   5u, reply_msg.length);
+  TEST_ASSERT_EQUAL_UINT8(0xFFu, reply_msg.payload[0]); // Ok:SHORT_UPLOAD
+  // 0xDEADBEEFu
+  TEST_ASSERT_EQUAL_UINT8(0xEFu, reply_msg.payload[1]);
+  TEST_ASSERT_EQUAL_UINT8(0xBEu, reply_msg.payload[2]);
+  TEST_ASSERT_EQUAL_UINT8(0xADu, reply_msg.payload[3]);
+  TEST_ASSERT_EQUAL_UINT8(0xDEu, reply_msg.payload[4]);
 
   uint32_t address = (uint32_t)&shortUploadVariable;
-  TEST_ASSERT_EQUAL_UINT32(address + 4, _XcpLightData.mta);
+  TEST_ASSERT_EQUAL_UINT32(address + 4, XcpLight_self.mta);
 }
 
 void test_Download(void)
@@ -150,9 +152,9 @@ void test_Download(void)
   cmdMsg.payload[6] = ((addr >> 16) & 0xFFu);
   cmdMsg.payload[7] = ((addr >> 24) & 0xFFu);
 
-  XcpLight_CommandProcessor(&cmdMsg);
+  XcpLight_processCommand(&cmdMsg);
 
-  TEST_ASSERT(addr == (uint32_t)_XcpLightData.mta);
+  TEST_ASSERT(addr == (uint32_t)XcpLight_self.mta);
 
   clearCmdMessage();
   clearReplyMessage();
@@ -165,11 +167,11 @@ void test_Download(void)
   cmdMsg.payload[4] = 0xB1u;
   cmdMsg.payload[5] = 0xFAu;
 
-  XcpLight_CommandProcessor(&cmdMsg);
+  XcpLight_processCommand(&cmdMsg);
 
   TEST_ASSERT(downloadVariable == 0xFAB11337);
   uint32_t address = (uint32_t)&downloadVariable;
-  TEST_ASSERT_EQUAL_UINT32(address + 4, _XcpLightData.mta);
+  TEST_ASSERT_EQUAL_UINT32(address + 4, XcpLight_self.mta);
 
 }
 
